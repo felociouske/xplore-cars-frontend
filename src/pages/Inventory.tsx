@@ -357,13 +357,9 @@ function Inventory() {
           {/* Image slot */}
           <div className="relative h-64 rounded-2xl overflow-hidden bg-secondary">
             <img
-              src="/public/image.png"
+              src="/image.png"
               alt="Vehicle inspection"
               className="w-full h-full object-cover"
-              onError={(e) => {
-                const el = e.target as HTMLImageElement;
-                el.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-muted-foreground text-sm">Add an inspection image at<br/><code class="text-primary">/image.png</code></div>`;
-              }}
             />
           </div>
         </section>
