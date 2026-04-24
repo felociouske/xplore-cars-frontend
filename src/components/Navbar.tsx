@@ -29,7 +29,7 @@ const Navbar = () => {
           <Link to="/" className="flex items-center space-x-3 group">
             <div className="rounded-lg overflow-hidden">
               <img
-                src="/favicon.ico"
+                src="/logo.jpg"
                 alt="Xplore Car Imports"
                 className="h-10 w-10 object-contain transition-transform group-hover:scale-110"
               />

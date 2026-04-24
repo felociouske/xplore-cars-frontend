@@ -357,7 +357,7 @@ function Inventory() {
           {/* Image slot */}
           <div className="relative h-64 rounded-2xl overflow-hidden bg-secondary">
             <img
-              src="/images/inspection.jpg"
+              src="/public/image.png"
               alt="Vehicle inspection"
               className="w-full h-full object-cover"
               onError={(e) => {
