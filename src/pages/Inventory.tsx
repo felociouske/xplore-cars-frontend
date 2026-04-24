@@ -362,7 +362,7 @@ function Inventory() {
               className="w-full h-full object-cover"
               onError={(e) => {
                 const el = e.target as HTMLImageElement;
-                el.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-muted-foreground text-sm">Add an inspection image at<br/><code class="text-primary">/public/images/inspection.jpg</code></div>`;
+                el.parentElement!.innerHTML = `<div class="w-full h-full flex items-center justify-center text-muted-foreground text-sm">Add an inspection image at<br/><code class="text-primary">/public/images/image.png</code></div>`;
               }}
             />
           </div>
