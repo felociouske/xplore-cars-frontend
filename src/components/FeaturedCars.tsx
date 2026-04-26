@@ -16,7 +16,9 @@ interface Car {
   make: string;
   model: string;
   year: string;
-  price: number;
+  price_from: number;
+  price_to?: number;
+  price_display: string;
   engine_type: string;
   transmission: string;
   mileage: number;
@@ -81,6 +83,13 @@ const FeaturedCars = () => {
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
   const clearFilters = () => setFilters({ engine_type: "", status: "", search: "" });
 
+  const formatPrice = (car: Car): string => {
+    if (!car.price_from) return "Price on Request";
+    const from = `KES ${Number(car.price_from).toLocaleString()}`;
+    if (car.price_to) return `${from} – ${Number(car.price_to).toLocaleString()}`;
+    return from;
+  };
+
   return (
     <section className="py-20 bg-secondary/40 dark:bg-muted/20 transition-colors">
       <div className="container mx-auto px-4">
@@ -99,7 +108,6 @@ const FeaturedCars = () => {
             </p>
           </div>
 
-          {/* Filter toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center gap-2 px-5 py-2.5 border border-border rounded-xl bg-card text-foreground hover:border-primary transition font-medium text-sm self-start md:self-auto"
@@ -180,15 +188,13 @@ const FeaturedCars = () => {
                 key={car.id}
                 className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-large hover:-translate-y-1 transition-all duration-300"
               >
-                {/* Image — tall and prominent */}
+                {/* Image */}
                 <div className="relative overflow-hidden h-60">
                   <img
                     src={getImageUrl(car)}
                     alt={car.name || `${car.make} ${car.model}`}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = "/placeholder-car.jpg";
-                    }}
+                    onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.jpg"; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 
@@ -199,9 +205,9 @@ const FeaturedCars = () => {
                   )}
 
                   {/* Price on image */}
-                  <div className="absolute bottom-3 left-4">
-                    <p className="font-display text-xl font-bold text-white drop-shadow">
-                      {car.price ? `KES ${Number(car.price).toLocaleString()}` : "Price on Request"}
+                  <div className="absolute bottom-3 left-4 right-4">
+                    <p className="font-display text-lg font-bold text-white drop-shadow">
+                      {formatPrice(car)}
                     </p>
                   </div>
                 </div>
@@ -240,7 +246,6 @@ const FeaturedCars = () => {
           </div>
         )}
 
-        {/* View all link */}
         {!loading && (
           <div className="text-center">
             <Link

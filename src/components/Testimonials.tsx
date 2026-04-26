@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { Star, PlayCircle } from "lucide-react";
+import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { fetchTestimonials } from "../services/api";
 
-// 🎥 YouTube Embed Component
 const YouTubeEmbed = ({ videoUrl, title }: { videoUrl: string; title?: string }) => (
-  <div className="relative group rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-300">
+  <div className="relative rounded-xl overflow-hidden shadow-medium">
     <div className="relative pb-[56.25%] h-0">
       <iframe
         src={videoUrl}
         title={title}
-        className="absolute top-0 left-0 w-full h-full rounded-2xl"
+        className="absolute top-0 left-0 w-full h-full"
         allowFullScreen
-      ></iframe>
+      />
     </div>
-    <a
-      href={videoUrl.replace("embed/", "watch?v=")} // opens YouTube page
-      target="_blank"
-      rel="noopener noreferrer"
-      className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-    >
-      <div className="flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-full text-lg font-semibold shadow-lg">
-        <PlayCircle className="w-5 h-5" />
-        <span>Watch on YouTube</span>
-      </div>
-    </a>
+  </div>
+);
+
+const StarRating = ({ rating }: { rating: number }) => (
+  <div className="flex gap-0.5 mb-3">
+    {Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        size={16}
+        className={i < rating ? "text-yellow-400" : "text-gray-300"}
+        fill={i < rating ? "currentColor" : "none"}
+      />
+    ))}
   </div>
 );
 
@@ -34,8 +35,6 @@ interface Testimonial {
   author_name: string;
   author_role: string;
   testimonial_text: string;
-  youtube_url?: string | null;
-  youtube_id?: string | null;
   youtube_embed_url?: string | null;
   layout_type: "text" | "video" | "both";
   rating: number;
@@ -46,14 +45,12 @@ const Testimonials = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // 📡 Fetch testimonials from backend
   useEffect(() => {
     async function loadTestimonials() {
       try {
         const data = await fetchTestimonials();
         setTestimonials(data);
       } catch (err) {
-        console.error("Error fetching testimonials:", err);
         setError("Failed to load testimonials. Please try again later.");
       } finally {
         setLoading(false);
@@ -62,134 +59,134 @@ const Testimonials = () => {
     loadTestimonials();
   }, []);
 
-  // Separate testimonials by layout type
+  const textTestimonials = testimonials.filter((t) => t.layout_type === "text");
   const videoTestimonials = testimonials.filter(
-    (item) => item.layout_type === "video" || item.layout_type === "both"
+    (t) => (t.layout_type === "video" || t.layout_type === "both") && t.youtube_embed_url
   );
-  const textTestimonials = testimonials.filter(
-    (item) => item.layout_type === "text"
-  );
+
+  if (loading) {
+    return (
+      <section className="py-20 bg-secondary/40">
+        <div className="text-center text-muted-foreground py-10">
+          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-3" />
+          Loading testimonials...
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-20 bg-secondary/40">
+        <div className="text-center text-destructive py-10">{error}</div>
+      </section>
+    );
+  }
 
   return (
-    <section className="py-20 relative bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white transition-colors duration-500">
-      {/* 🌈 Background Gradient */}
-      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-pink-500/5 pointer-events-none" />
+    <section id="testimonials" className="py-20 bg-secondary/40 dark:bg-muted/20 transition-colors">
+      <div className="container mx-auto px-4">
 
-      {/* 🏷️ Header */}
-      <div className="text-center mb-16 relative z-10">
-        <h2 className="text-4xl font-bold mb-4">What Our Customers Say</h2>
-        <p className="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-          Genuine experiences from our clients who trusted Xplore Car Imports. Here is what they have to say.
-        </p>
-      </div>
+        {/* Header */}
+        <div className="text-center mb-14">
+          <p className="text-sm font-medium text-primary uppercase tracking-widest mb-2">
+            Client Stories
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl font-bold text-foreground mb-4">
+            What Our Customers Say
+          </h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            Genuine experiences from clients who trusted Xplore Car Imports. Here is what they have to say.
+          </p>
+        </div>
 
-      {/* 🔄 Loading / Error / Empty */}
-      {loading && (
-        <div className="text-center text-gray-700 dark:text-gray-200 py-10">
-          <p>Loading testimonials...</p>
-        </div>
-      )}
-      {error && (
-        <div className="text-center text-red-500 py-10">
-          <p>{error}</p>
-        </div>
-      )}
-      {!loading && !error && testimonials.length === 0 && (
-        <div className="text-center text-gray-500 py-10">
-          <p>No testimonials available yet. Check back soon!</p>
-        </div>
-      )}
+        {testimonials.length === 0 && (
+          <p className="text-center text-muted-foreground py-10">
+            No testimonials available yet. Check back soon!
+          </p>
+        )}
 
-      {/* 💬 Text-Only Testimonials (GRID) */}
-      {textTestimonials.length > 0 && (
-        <div className="relative z-10 px-6 md:px-12 mb-20">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+        {/* Text testimonials — card grid */}
+        {textTestimonials.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {textTestimonials.map((item, index) => (
               <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 30 }}
+                key={item.id}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.6 }}
-                className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300"
+                transition={{ duration: 0.5, delay: index * 0.08 }}
+                className="bg-card border border-border rounded-2xl p-7 hover:shadow-medium transition-all duration-300 flex flex-col"
               >
-                <h3 className="text-2xl font-semibold mb-2">
-                  {item.author_name}
-                </h3>
-                {item.author_role && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                    {item.author_role}
+                <StarRating rating={item.rating || 5} />
+
+                {item.testimonial_text && (
+                  <p className="text-muted-foreground leading-relaxed mb-5 flex-1 italic">
+                    "{item.testimonial_text}"
                   </p>
                 )}
-                <div className="flex justify-center space-x-1 mb-4">
-                  {Array.from({ length: item.rating || 5 }, (_, i) => (
-                    <Star
-                      key={i}
-                      size={18}
-                      className="text-yellow-400"
-                      fill="currentColor"
-                    />
-                  ))}
+
+                <div className="border-t border-border pt-4 mt-auto">
+                  <p className="font-semibold text-foreground">{item.author_name}</p>
+                  {item.author_role && (
+                    <p className="text-xs text-muted-foreground mt-0.5">{item.author_role}</p>
+                  )}
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  “{item.testimonial_text}”
-                </p>
               </motion.div>
             ))}
           </div>
-        </div>
-      )}
+        )}
 
-      {/* 🎥 Video Testimonials (SIDE-BY-SIDE) */}
-      {videoTestimonials.length > 0 && (
-        <div className="relative z-10 space-y-16 px-6 md:px-12">
-          {videoTestimonials.map((item, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col md:flex-row md:items-center gap-8 justify-center"
-            >
-              {/* Text */}
-              <div className="md:w-1/2">
-                <h3 className="text-2xl font-semibold mb-2">
-                  {item.author_name}
-                </h3>
-                {item.author_role && (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">
-                    {item.author_role}
-                  </p>
-                )}
-                <div className="flex justify-start space-x-1 mb-4">
-                  {Array.from({ length: item.rating || 5 }, (_, i) => (
-                    <Star
-                      key={i}
-                      size={18}
-                      className="text-yellow-400"
-                      fill="currentColor"
-                    />
-                  ))}
-                </div>
-                <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                  “{item.testimonial_text}”
+        {/* Video testimonials — grid, centered */}
+        {videoTestimonials.length > 0 && (
+          <>
+            {textTestimonials.length > 0 && (
+              <div className="text-center mb-10">
+                <p className="text-sm font-medium text-primary uppercase tracking-widest mb-2">
+                  Video Reviews
                 </p>
+                <h3 className="font-display text-2xl font-bold text-foreground">
+                  Hear Directly From Our Clients
+                </h3>
               </div>
+            )}
 
-              {/* Video */}
-              {item.youtube_embed_url && (
-                <div className="md:w-1/2">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {videoTestimonials.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-card border border-border rounded-2xl overflow-hidden hover:shadow-medium transition-all duration-300"
+                >
+                  {/* Video */}
                   <YouTubeEmbed
-                    videoUrl={item.youtube_embed_url}
+                    videoUrl={item.youtube_embed_url!}
                     title={item.title || item.author_name}
                   />
-                </div>
-              )}
-            </motion.div>
-          ))}
-        </div>
-      )}
+
+                  {/* Info below video */}
+                  <div className="p-6">
+                    <StarRating rating={item.rating || 5} />
+                    <p className="font-semibold text-foreground">{item.author_name}</p>
+                    {item.author_role && (
+                      <p className="text-xs text-muted-foreground mt-0.5 mb-3">{item.author_role}</p>
+                    )}
+                    {item.testimonial_text && (
+                      <p className="text-muted-foreground text-sm leading-relaxed italic">
+                        "{item.testimonial_text}"
+                      </p>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        )}
+
+      </div>
     </section>
   );
 };

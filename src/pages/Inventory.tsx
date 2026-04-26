@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CarInventoryEnquiry from "../components/CarInventoryEnquiry";
 import CarEnquiryForm from "../components/CarEnquiryForm";
-import { SlidersHorizontal, X, Search, Calendar, Fuel, Gauge, Car } from "lucide-react";
+import { SlidersHorizontal, X, Search, Fuel, Gauge, Car } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
@@ -25,7 +25,9 @@ interface CarItem {
   engine_type: string;
   transmission: string;
   mileage: number;
-  price: number;
+  price_from: number;
+  price_to?: number;
+  price_display: string;
   color: string;
   status: string;
   images?: CarImage[];
@@ -75,7 +77,7 @@ function Inventory() {
       if (filters.status && car.status !== filters.status) return false;
       if (filters.transmission && car.transmission?.toLowerCase() !== filters.transmission) return false;
       if (filters.min_year && car.year < Number(filters.min_year)) return false;
-      if (filters.max_price && car.price > Number(filters.max_price)) return false;
+      if (filters.max_price && car.price_from > Number(filters.max_price)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (
@@ -112,7 +114,6 @@ function Inventory() {
 
       {/* Page Banner */}
       <div className="relative bg-gradient-to-r from-blue-700 to-blue-600 py-16 px-4 overflow-hidden">
-        {/* Background decorative image slot */}
         <div className="absolute inset-0 opacity-10">
           <img
             src="/images/inventory-banner.jpg"
@@ -122,22 +123,16 @@ function Inventory() {
           />
         </div>
         <div className="container mx-auto text-center relative z-10">
-          <motion.p
-            className="text-blue-200 text-sm uppercase tracking-widest font-medium mb-2"
-            variants={fadeUp} initial="hidden" animate="visible"
-          >
+          <motion.p className="text-blue-200 text-sm uppercase tracking-widest font-medium mb-2"
+            variants={fadeUp} initial="hidden" animate="visible">
             Imported Direct from Japan
           </motion.p>
-          <motion.h1
-            className="font-display text-4xl md:text-5xl font-bold text-white mb-3"
-            variants={fadeUp} initial="hidden" animate="visible"
-          >
+          <motion.h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-3"
+            variants={fadeUp} initial="hidden" animate="visible">
             Vehicle Inventory
           </motion.h1>
-          <motion.p
-            className="text-blue-100/80 max-w-xl mx-auto"
-            variants={fadeUp} initial="hidden" animate="visible"
-          >
+          <motion.p className="text-blue-100/80 max-w-xl mx-auto"
+            variants={fadeUp} initial="hidden" animate="visible">
             Every vehicle personally inspected, verified, and imported with full documentation.
           </motion.p>
         </div>
@@ -170,10 +165,7 @@ function Inventory() {
             )}
           </button>
           {activeFilterCount > 0 && (
-            <button
-              onClick={clearFilters}
-              className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground hover:text-destructive transition"
-            >
+            <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground hover:text-destructive transition">
               <X className="h-4 w-4" /> Clear
             </button>
           )}
@@ -187,63 +179,37 @@ function Inventory() {
             className="bg-card border border-border rounded-2xl p-6 mb-8 grid grid-cols-2 md:grid-cols-5 gap-4"
           >
             {[
-              {
-                label: "Engine", key: "engine_type",
-                options: [["", "All Engines"], ["petrol", "Petrol"], ["diesel", "Diesel"], ["hybrid", "Hybrid"], ["electric", "Electric"]],
-              },
-              {
-                label: "Status", key: "status",
-                options: [["", "All Statuses"], ["available", "Available"], ["reserved", "Reserved"], ["new", "New"]],
-              },
-              {
-                label: "Transmission", key: "transmission",
-                options: [["", "All"], ["automatic", "Automatic"], ["manual", "Manual"]],
-              },
+              { label: "Engine", key: "engine_type", options: [["", "All Engines"], ["petrol", "Petrol"], ["diesel", "Diesel"], ["hybrid", "Hybrid"], ["electric", "Electric"]] },
+              { label: "Status", key: "status", options: [["", "All Statuses"], ["available", "Available"], ["reserved", "Reserved"], ["new", "New"]] },
+              { label: "Transmission", key: "transmission", options: [["", "All"], ["automatic", "Automatic"], ["manual", "Manual"]] },
             ].map(({ label, key, options }) => (
               <div key={key}>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  {label}
-                </label>
+                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{label}</label>
                 <select
                   value={filters[key as keyof typeof filters]}
                   onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}
                   className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                 >
-                  {options.map(([val, lbl]) => (
-                    <option key={val} value={val}>{lbl}</option>
-                  ))}
+                  {options.map(([val, lbl]) => <option key={val} value={val}>{lbl}</option>)}
                 </select>
               </div>
             ))}
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Min Year
-              </label>
-              <input
-                type="number"
-                placeholder="e.g. 2018"
-                value={filters.min_year}
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Min Year</label>
+              <input type="number" placeholder="e.g. 2018" value={filters.min_year}
                 onChange={(e) => setFilters({ ...filters, min_year: e.target.value })}
-                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                Max Price (KES)
-              </label>
-              <input
-                type="number"
-                placeholder="e.g. 2000000"
-                value={filters.max_price}
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Max Price (KES)</label>
+              <input type="number" placeholder="e.g. 2000000" value={filters.max_price}
                 onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
-                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-              />
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
           </motion.div>
         )}
 
-        {/* Results count */}
         <p className="text-sm text-muted-foreground mb-6">
           Showing <span className="font-semibold text-foreground">{filteredCars.length}</span> vehicle{filteredCars.length !== 1 ? "s" : ""}
           {activeFilterCount > 0 && " matching your filters"}
@@ -254,9 +220,7 @@ function Inventory() {
           <div className="text-center py-20">
             <Car className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-40" />
             <p className="text-muted-foreground">No vehicles match your filters.</p>
-            <button onClick={clearFilters} className="mt-3 text-primary underline underline-offset-4 text-sm">
-              Clear filters
-            </button>
+            <button onClick={clearFilters} className="mt-3 text-primary underline underline-offset-4 text-sm">Clear filters</button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -264,13 +228,9 @@ function Inventory() {
               <motion.div
                 key={car.id}
                 className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-large hover:-translate-y-1 transition-all duration-300"
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
+                variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.06 }}
               >
-                {/* Image */}
                 <div className="relative overflow-hidden h-60">
                   <img
                     src={getImageUrl(car)}
@@ -284,7 +244,6 @@ function Inventory() {
                   </span>
                 </div>
 
-                {/* Info */}
                 <div className="p-5">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
                     {car.name || `${car.make} ${car.model}`}
@@ -311,9 +270,18 @@ function Inventory() {
                     )}
                   </div>
 
-                  <p className="font-display text-2xl font-bold text-foreground mb-4">
-                    KES {Number(car.price).toLocaleString()}
-                  </p>
+                  {/* Price range */}
+                  <div className="mb-4">
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Price</p>
+                    <p className="font-display text-xl font-bold text-foreground">
+                      KES {Number(car.price_from).toLocaleString()}
+                      {car.price_to && (
+                        <span className="text-muted-foreground font-normal text-base">
+                          {" "}– {Number(car.price_to).toLocaleString()}
+                        </span>
+                      )}
+                    </p>
+                  </div>
 
                   <div className="flex gap-2">
                     <Link
@@ -335,7 +303,7 @@ function Inventory() {
           </div>
         )}
 
-        {/* Verified section with image slot on the side */}
+        {/* Verified section */}
         <section className="mt-20 grid md:grid-cols-2 gap-10 items-center py-12 border-t border-border">
           <div>
             <h3 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
@@ -354,18 +322,12 @@ function Inventory() {
               ))}
             </ul>
           </div>
-          {/* Image slot */}
           <div className="relative h-64 rounded-2xl overflow-hidden bg-secondary">
-            <img
-              src="/image.png"
-              alt="Vehicle inspection"
-              className="w-full h-full object-cover"
-            />
+            <img src="/image.png" alt="Vehicle inspection" className="w-full h-full object-cover" />
           </div>
         </section>
       </main>
 
-      {/* Enquiry form section */}
       <section className="py-16 bg-secondary/40 dark:bg-muted/20 px-4">
         <div className="container mx-auto text-center mb-10">
           <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
@@ -380,7 +342,6 @@ function Inventory() {
         </div>
       </section>
 
-      {/* Quote Modal */}
       {selectedCar && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 px-4">
           <div className="bg-card rounded-2xl max-h-[90vh] overflow-y-auto w-full max-w-xl shadow-large">
