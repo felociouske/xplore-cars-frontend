@@ -3,17 +3,14 @@ import { useParams, Link, Navigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import {
-  Phone, MessageCircle, Mail, ArrowLeft, Car, Gauge,
-  Settings, Fuel, Calendar, PaintBucket, ChevronLeft, ChevronRight, Star,
+  Phone, MessageCircle, Mail, ArrowLeft,
+  Gauge, Settings, Fuel, Calendar, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { fadeUp } from "../animations/fadeUp";
 import { motion } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { fetchCars } from "../services/api";
 import CarInventoryEnquiry from "../components/CarInventoryEnquiry";
@@ -38,7 +35,42 @@ interface CarData {
   features?: string;
   description?: string;
   images?: any[];
+  body_type?: string;
+  import_type?: string;
+  drive_side?: string;
+  trim_levels?: string;
+  trim_levels_list?: string[];
 }
+
+const STATUS_COLORS: Record<string, string> = {
+  available: "bg-emerald-500 text-white",
+  reserved: "bg-amber-400 text-stone-900",
+  new: "bg-blue-600 text-white",
+};
+
+const BODY_TYPE_LABELS: Record<string, string> = {
+  hatchback: "Hatchback",
+  sedan: "Sedan",
+  suv: "SUV",
+  crossover: "Crossover",
+  wagon: "Wagon",
+  minivan: "Minivan",
+  pickup: "Pickup",
+  coupe: "Coupe",
+  convertible: "Convertible",
+  van: "Van",
+};
+
+const IMPORT_LABELS: Record<string, string> = {
+  japan_import: "Japan Import",
+  local: "Local",
+  uk_import: "UK Import",
+};
+
+const DRIVE_LABELS: Record<string, string> = {
+  rhd: "Right Hand Drive",
+  lhd: "Left Hand Drive",
+};
 
 const CarDetail = () => {
   const { id } = useParams();
@@ -56,9 +88,7 @@ const CarDetail = () => {
         const cars = await fetchCars();
         const foundCar = cars.find((car: CarData) => String(car.id) === id);
         if (!foundCar) return setCarData(null);
-
         setCarData(foundCar);
-
         const fullImages = (foundCar.images || []).map((img: any) => {
           const src = typeof img === "string" ? img : img.image;
           return src?.startsWith("http") ? src : `${API_BASE_URL.replace('/api', '')}${src}`;
@@ -87,30 +117,46 @@ const CarDetail = () => {
 
   if (!carData) return <Navigate to="/car-options" replace />;
 
-  const handleNextImage = () => setCurrentImageIndex((prev) => (prev + 1) % images.length);
-  const handlePrevImage = () => setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
+  const handleNextImage = () => setCurrentImageIndex((p) => (p + 1) % images.length);
+  const handlePrevImage = () => setCurrentImageIndex((p) => (p - 1 + images.length) % images.length);
 
   const handleWhatsApp = () => {
-    const message = encodeURIComponent(
-      `Hi, I'm interested in the ${carData.name || `${carData.make} ${carData.model}`} listed on your website.`
-    );
-    window.open(`https://wa.me/254757356989?text=${message}`, "_blank");
+    const msg = encodeURIComponent(`Hi, I'm interested in the ${carData.name || `${carData.make} ${carData.model}`} listed on your website.`);
+    window.open(`https://wa.me/254757356989?text=${msg}`, "_blank");
   };
-
   const handleCall = () => { window.location.href = `tel:+254757356989`; };
-
   const handleEmail = () => {
-    const subject = encodeURIComponent(`Inquiry about ${carData.name || carData.make}`);
-    const body = encodeURIComponent(`Hello, I'm interested in this vehicle. Please provide more details.`);
-    window.location.href = `mailto:localsays@gmail.com?subject=${subject}&body=${body}`;
+    const s = encodeURIComponent(`Inquiry about ${carData.name || carData.make}`);
+    const b = encodeURIComponent(`Hello, I'm interested in this vehicle. Please provide more details.`);
+    window.location.href = `mailto:localsays@gmail.com?subject=${s}&body=${b}`;
   };
 
-  const priceDisplay = () => {
-    if (!carData.price_from) return "Price on Request";
-    const from = `KES ${Number(carData.price_from).toLocaleString()}`;
-    if (carData.price_to) return `${from} – ${Number(carData.price_to).toLocaleString()}`;
-    return from;
-  };
+  const carTitle = carData.name || `${carData.make} ${carData.model}`;
+  const bodyTypeLabel = carData.body_type ? (BODY_TYPE_LABELS[carData.body_type] || carData.body_type) : null;
+  const importLabel = carData.import_type ? (IMPORT_LABELS[carData.import_type] || carData.import_type) : null;
+  const driveLabel = carData.drive_side ? (DRIVE_LABELS[carData.drive_side] || carData.drive_side) : null;
+  const trimList: string[] =
+    carData.trim_levels_list && carData.trim_levels_list.length > 0
+      ? carData.trim_levels_list
+      : carData.trim_levels
+        ? carData.trim_levels.split(",").map((t) => t.trim()).filter(Boolean)
+        : [];
+
+  const specItems = [
+    { icon: <Fuel className="h-4 w-4 text-primary" />, label: "Engine", value: carData.engine_type },
+    { icon: <Settings className="h-4 w-4 text-primary" />, label: "Transmission", value: carData.transmission },
+    { icon: <Gauge className="h-4 w-4 text-primary" />, label: "Mileage", value: carData.mileage ? `${carData.mileage.toLocaleString()} km` : null },
+    { icon: <Calendar className="h-4 w-4 text-primary" />, label: "Year", value: String(carData.year) },
+    {
+      icon: (
+        <svg className="h-4 w-4 text-yellow-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+        </svg>
+      ),
+      label: "Grade", value: carData.grade,
+    },
+    { icon: null, label: "Color", value: carData.color },
+  ].filter((s) => s.value);
 
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors">
@@ -121,10 +167,7 @@ const CarDetail = () => {
         {/* Breadcrumb */}
         <div className="bg-secondary py-4 transition-colors">
           <div className="container mx-auto px-4">
-            <Link
-              to="/car-options"
-              className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
-            >
+            <Link to="/car-options" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
               <ArrowLeft className="h-4 w-4" />
               Back to Car Options
             </Link>
@@ -132,170 +175,168 @@ const CarDetail = () => {
         </div>
 
         <div className="container mx-auto px-4 py-10 max-w-6xl">
-          <div className="grid lg:grid-cols-2 gap-10">
+          <div className="grid lg:grid-cols-2 gap-10 items-start">
 
-            {/* Image Section */}
-            <div className="relative rounded-xl overflow-hidden border border-border shadow-soft transition-colors">
-              {images.length > 0 ? (
-                <>
-                  <img
-                    src={images[currentImageIndex]}
-                    alt={carData.name || `${carData.make} ${carData.model}`}
-                    className="w-full h-[420px] object-cover transition-transform duration-500"
-                    onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.jpg"; }}
-                  />
+            {/* ── Image Gallery ── */}
+            <div className="space-y-3">
+              <div className="relative rounded-2xl overflow-hidden border border-border shadow-sm bg-secondary/30">
+                {images.length > 0 ? (
+                  <>
+                    <img
+                      src={images[currentImageIndex]}
+                      alt={carTitle}
+                      className="w-full h-[420px] object-cover"
+                      onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.jpg"; }}
+                    />
+                    {images.length > 1 && (
+                      <>
+                        <button onClick={handlePrevImage} className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/85 hover:bg-white dark:bg-black/50 dark:hover:bg-black/70 rounded-full p-2 shadow transition">
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button onClick={handleNextImage} className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/85 hover:bg-white dark:bg-black/50 dark:hover:bg-black/70 rounded-full p-2 shadow transition">
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </>
+                    )}
+                    {carData.status && (
+                      <span className={`absolute top-4 left-4 text-xs px-3 py-1 rounded-full font-semibold capitalize shadow ${STATUS_COLORS[carData.status] || "bg-gray-600 text-white"}`}>
+                        {carData.status}
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <img src="/placeholder-car.jpg" alt="No car image" className="w-full h-[420px] object-cover" />
+                )}
+              </div>
 
-                  {images.length > 1 && (
-                    <>
-                      <button onClick={handlePrevImage}
-                        className="absolute top-1/2 left-3 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow transition-colors">
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button onClick={handleNextImage}
-                        className="absolute top-1/2 right-3 -translate-y-1/2 bg-white/80 hover:bg-white rounded-full p-2 shadow transition-colors">
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    </>
-                  )}
-
-                  {images.length > 1 && (
-                    <div className="flex items-center justify-center gap-3 mt-3 p-3 flex-wrap bg-secondary/50">
-                      {images.map((img, idx) => (
-                        <div
-                          key={idx}
-                          onClick={() => setCurrentImageIndex(idx)}
-                          className={`border-2 rounded-lg overflow-hidden cursor-pointer transition-all ${
-                            currentImageIndex === idx ? "border-primary scale-105" : "border-border hover:border-primary"
-                          }`}
-                        >
-                          <img src={img} alt={`Thumbnail ${idx + 1}`} className="h-16 w-20 object-cover" />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <img src="/placeholder-car.jpg" alt="No car image" className="w-full h-[420px] object-cover" />
-              )}
-
-              {carData.status && (
-                <Badge className="absolute top-4 left-4 capitalize bg-primary/90">
-                  {carData.status}
-                </Badge>
+              {images.length > 1 && (
+                <div className="flex gap-2 flex-wrap">
+                  {images.map((img, idx) => (
+                    <button key={idx} onClick={() => setCurrentImageIndex(idx)}
+                      className={`border-2 rounded-lg overflow-hidden transition-all ${currentImageIndex === idx ? "border-primary scale-105" : "border-border hover:border-primary/50"}`}>
+                      <img src={img} alt={`View ${idx + 1}`} className="h-16 w-20 object-cover" />
+                    </button>
+                  ))}
+                </div>
               )}
             </div>
 
-            {/* Car Info */}
-            <div className="space-y-6">
-              <div>
-                <h1 className="text-3xl lg:text-4xl font-display font-bold text-foreground mb-2">
-                  {carData.name || `${carData.make} ${carData.model}`}
-                </h1>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  <Badge variant="secondary">{carData.year}</Badge>
-                  <Badge variant="outline">{carData.make}</Badge>
-                  <Badge variant="outline">{carData.model}</Badge>
-                </div>
+            {/* ── Car Info ── */}
+            <div className="bg-card border border-border rounded-2xl p-7 space-y-5 shadow-sm">
 
-                {/* Price range */}
-                <div className="bg-primary/5 border border-primary/20 rounded-xl px-5 py-3 inline-block">
-                  <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Price</p>
-                  <p className="text-3xl font-display font-bold text-primary">
-                    {priceDisplay()}
-                  </p>
+              {/* Title row */}
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h1 className="text-2xl lg:text-3xl font-display font-bold text-foreground leading-tight">
+                    {carTitle}
+                  </h1>
+                  {(importLabel || driveLabel) && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      {[importLabel, driveLabel].filter(Boolean).join(" · ")}
+                    </p>
+                  )}
                 </div>
+                {bodyTypeLabel && (
+                  <span className="bg-rose-50 text-rose-600 dark:bg-rose-950/60 dark:text-rose-400 border border-rose-200 dark:border-rose-800 text-sm font-semibold px-4 py-1.5 rounded-full whitespace-nowrap">
+                    {bodyTypeLabel}
+                  </span>
+                )}
               </div>
 
-              <Separator />
-
-              {/* Specs */}
-              <div>
-                <h2 className="text-xl font-semibold mb-4 text-foreground">Specifications</h2>
-                <div className="grid grid-cols-2 gap-4 text-sm text-foreground">
-                  <div className="flex items-center gap-2">
-                    <Fuel className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span><strong>Engine:</strong> {carData.engine_type || "—"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Settings className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span><strong>Transmission:</strong> {carData.transmission || "—"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Gauge className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span><strong>Mileage:</strong> {carData.mileage?.toLocaleString() || "—"} km</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <PaintBucket className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span><strong>Color:</strong> {carData.color || "—"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span><strong>Year:</strong> {carData.year}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Star className="h-4 w-4 text-yellow-500 flex-shrink-0" />
-                    <span><strong>Grade:</strong> {carData.grade || "N/A"}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Car className="h-4 w-4 text-primary flex-shrink-0" />
-                    <span><strong>Status:</strong> {carData.status || "—"}</span>
+              {/* Trim Levels */}
+              {trimList.length > 0 && (
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-2">Trim Levels</p>
+                  <div className="flex flex-wrap gap-2">
+                    {trimList.map((trim) => (
+                      <span key={trim} className="border border-border rounded-full px-4 py-1 text-sm text-foreground bg-secondary/60">
+                        {trim}
+                      </span>
+                    ))}
                   </div>
                 </div>
-              </div>
-
-              {/* Features */}
-              {carData.features && (
-                <>
-                  <Separator />
-                  <div>
-                    <h2 className="text-xl font-semibold mb-2 text-foreground">Features</h2>
-                    <ul className="list-disc list-inside text-muted-foreground space-y-1">
-                      {carData.features.split("\n").filter((f) => f.trim()).map((feat, idx) => (
-                        <li key={idx}>{feat}</li>
-                      ))}
-                    </ul>
-                  </div>
-                </>
               )}
 
-              <Separator />
+              <div className="border-t border-border" />
 
-              {/* Contact Buttons */}
-              <div className="flex flex-wrap gap-3 justify-center">
-                <Button onClick={() => setSelectedCar(carData)} className="bg-blue-600 hover:bg-blue-700">
+              {/* Price */}
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-1.5">Price Range</p>
+                <p className="text-3xl font-display font-bold text-foreground tracking-tight">
+                  {carData.price_from
+                    ? `KES ${Number(carData.price_from).toLocaleString()}${carData.price_to ? ` – ${Number(carData.price_to).toLocaleString()}` : ""}`
+                    : "Price on Request"
+                  }
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">Varies by trim, mileage, grade &amp; year</p>
+              </div>
+
+              <div className="border-t border-border" />
+
+              {/* Quick specs */}
+              {specItems.length > 0 && (
+                <div className="grid grid-cols-2 gap-3">
+                  {specItems.map((s) => (
+                    <div key={s.label} className="flex items-center gap-2.5 bg-secondary/50 dark:bg-muted/20 rounded-xl px-4 py-3">
+                      {s.icon && <span className="flex-shrink-0">{s.icon}</span>}
+                      <div className="min-w-0">
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-wide">{s.label}</p>
+                        <p className="text-sm font-semibold text-foreground capitalize truncate">{s.value}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="border-t border-border" />
+
+              {/* CTAs */}
+              <div className="flex flex-wrap gap-2.5">
+                <Button onClick={() => setSelectedCar(carData)} className="flex-1 min-w-[110px]">
                   <Mail className="mr-2 h-4 w-4" /> Enquiry
                 </Button>
-                <Button onClick={handleWhatsApp} className="bg-green-600 hover:bg-green-700">
+                <Button onClick={handleWhatsApp} className="flex-1 min-w-[110px] bg-green-600 hover:bg-green-700">
                   <MessageCircle className="mr-2 h-4 w-4" /> WhatsApp
                 </Button>
-                <Button onClick={handleCall} variant="outline">
+                <Button onClick={handleCall} variant="outline" className="flex-1 min-w-[110px]">
                   <Phone className="mr-2 h-4 w-4" /> Call
                 </Button>
               </div>
             </div>
           </div>
 
-          {/* Description */}
-          <Card className="mt-12">
-            <CardHeader>
-              <CardTitle>Car Description</CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/* ── Features + Description ── */}
+          <div className="mt-10 space-y-6">
+            {carData.features && (
+              <div className="bg-card border border-border rounded-2xl p-7">
+                <h2 className="text-lg font-display font-semibold text-foreground mb-4">Key Features</h2>
+                <ul className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
+                  {carData.features.split("\n").filter((f) => f.trim()).map((feat, idx) => (
+                    <li key={idx} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <span className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
+                      {feat}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="bg-card border border-border rounded-2xl p-7">
+              <h2 className="text-lg font-display font-semibold text-foreground mb-4">About This Vehicle</h2>
               {carData.description ? (
-                <div className="prose dark:prose-invert max-w-none leading-relaxed">
+                <div className="prose dark:prose-invert max-w-none leading-relaxed text-muted-foreground text-sm">
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>{carData.description}</ReactMarkdown>
                 </div>
               ) : (
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   No detailed description is available for this vehicle.
                 </p>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </motion.main>
 
-      {/* Enquiry Modal */}
       {selectedCar && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 px-4">
           <div className="bg-card rounded-2xl max-h-[90vh] overflow-y-auto w-full max-w-xl shadow-large">

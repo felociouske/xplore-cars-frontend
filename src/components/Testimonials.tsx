@@ -3,25 +3,31 @@ import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { fetchTestimonials } from "../services/api";
 
-const YouTubeEmbed = ({ videoUrl, title }: { videoUrl: string; title?: string }) => (
-  <div className="relative rounded-xl overflow-hidden shadow-medium">
-    <div className="relative pb-[56.25%] h-0">
-      <iframe
-        src={videoUrl}
-        title={title}
-        className="absolute top-0 left-0 w-full h-full"
-        allowFullScreen
-      />
+const YouTubeEmbed = ({ videoUrl, title }: { videoUrl: string; title?: string }) => {
+  const cleanUrl = videoUrl.includes("?")
+    ? `${videoUrl}&modestbranding=1&rel=0&iv_load_policy=3`
+    : `${videoUrl}?modestbranding=1&rel=0&iv_load_policy=3`;
+
+  return (
+    <div className="relative rounded-xl overflow-hidden shadow-medium">
+      <div className="relative pb-[56.25%] h-0">
+        <iframe
+          src={cleanUrl}
+          title={title}
+          className="absolute top-0 left-0 w-full h-full"
+          allowFullScreen
+        />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const StarRating = ({ rating }: { rating: number }) => (
   <div className="flex gap-0.5 mb-3">
     {Array.from({ length: 5 }, (_, i) => (
       <Star
         key={i}
-        size={16}
+        size={12}
         className={i < rating ? "text-yellow-400" : "text-gray-300"}
         fill={i < rating ? "currentColor" : "none"}
       />
