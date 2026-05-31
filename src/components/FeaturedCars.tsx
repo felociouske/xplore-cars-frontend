@@ -12,24 +12,34 @@ interface CarImage {
 
 interface Car {
   id: number;
-  name: string;
-  make: string;
-  model: string;
-  year: string;
+  name?: string;
   price_from: number;
   price_to?: number;
   price_display: string;
-  engine_type: string;
-  transmission: string;
-  mileage: number;
-  status?: string;
   images?: (string | CarImage)[];
+  body_type?: string;
+  import_type?: string;
+  drive_side?: string;
+  trim_levels?: string;
+  trim_levels_list?: string[];
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  available: "bg-emerald-500 text-white",
-  reserved: "bg-amber-400 text-stone-900",
-  new: "bg-blue-600 text-white",
+const BODY_TYPE_LABELS: Record<string, string> = {
+  hatchback: "Hatchback",
+  sedan: "Sedan",
+  suv: "SUV",
+  crossover: "Crossover",
+  wagon: "Wagon",
+  minivan: "Minivan",
+  pickup: "Pickup",
+  coupe: "Coupe",
+  convertible: "Convertible",
+  van: "Van",
+};
+
+const IMPORT_LABELS: Record<string, string> = {
+  japan_import: "Japan Import",
+  local: "Local",
 };
 
 const FeaturedCars = () => {
@@ -37,8 +47,8 @@ const FeaturedCars = () => {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState({
-    engine_type: "",
-    status: "",
+    body_type: "",
+    import_type: "",
     search: "",
   });
 
@@ -66,14 +76,14 @@ const FeaturedCars = () => {
 
   const filteredCars = useMemo(() => {
     return cars.filter((car) => {
-      if (filters.engine_type && car.engine_type !== filters.engine_type) return false;
-      if (filters.status && car.status !== filters.status) return false;
+      if (filters.body_type && car.body_type !== filters.body_type) return false;
+      if (filters.import_type && car.import_type !== filters.import_type) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (
-          !car.make?.toLowerCase().includes(q) &&
-          !car.model?.toLowerCase().includes(q) &&
-          !car.name?.toLowerCase().includes(q)
+          !car.name?.toLowerCase().includes(q) &&
+          !car.body_type?.toLowerCase().includes(q) &&
+          !car.import_type?.toLowerCase().includes(q)
         ) return false;
       }
       return true;
@@ -81,7 +91,7 @@ const FeaturedCars = () => {
   }, [cars, filters]);
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
-  const clearFilters = () => setFilters({ engine_type: "", status: "", search: "" });
+  const clearFilters = () => setFilters({ body_type: "", import_type: "", search: "" });
 
   const formatPrice = (car: Car): string => {
     if (!car.price_from) return "Price on Request";
@@ -136,26 +146,31 @@ const FeaturedCars = () => {
               />
             </div>
             <select
-              value={filters.engine_type}
-              onChange={(e) => setFilters({ ...filters, engine_type: e.target.value })}
+              value={filters.body_type}
+              onChange={(e) => setFilters({ ...filters, body_type: e.target.value })}
               className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
             >
-              <option value="">All Engine Types</option>
-              <option value="petrol">Petrol</option>
-              <option value="diesel">Diesel</option>
-              <option value="hybrid">Hybrid</option>
-              <option value="electric">Electric</option>
+              <option value="">All Body Types</option>
+              <option value="hatchback">Hatchback</option>
+              <option value="sedan">Sedan</option>
+              <option value="suv">SUV</option>
+              <option value="crossover">Crossover</option>
+              <option value="wagon">Wagon</option>
+              <option value="minivan">Minivan</option>
+              <option value="pickup">Pickup</option>
+              <option value="coupe">Coupe</option>
+              <option value="convertible">Convertible</option>
+              <option value="van">Van</option>
             </select>
             <div className="flex gap-2">
               <select
-                value={filters.status}
-                onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+                value={filters.import_type}
+                onChange={(e) => setFilters({ ...filters, import_type: e.target.value })}
                 className="flex-1 border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
               >
-                <option value="">All Statuses</option>
-                <option value="available">Available</option>
-                <option value="reserved">Reserved</option>
-                <option value="new">New</option>
+                <option value="">All Imports</option>
+                <option value="japan_import">Japan Import</option>
+                <option value="local">Local</option>
               </select>
               {activeFilterCount > 0 && (
                 <button
@@ -192,17 +207,11 @@ const FeaturedCars = () => {
                 <div className="relative overflow-hidden h-60">
                   <img
                     src={getImageUrl(car)}
-                    alt={car.name || `${car.make} ${car.model}`}
+                    alt={car.name || car.body_type || "Vehicle"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.jpg"; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-
-                  {car.status && (
-                    <span className={`absolute top-3 left-3 text-xs px-3 py-1 rounded-full font-semibold capitalize ${STATUS_COLORS[car.status] || "bg-gray-600 text-white"}`}>
-                      {car.status}
-                    </span>
-                  )}
 
                   {/* Price on image */}
                   <div className="absolute bottom-3 left-4 right-4">
@@ -215,22 +224,28 @@ const FeaturedCars = () => {
                 {/* Details */}
                 <div className="p-5">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-3 group-hover:text-primary transition-colors">
-                    {car.name || `${car.make} ${car.model}`}
+                    {car.name || car.body_type || "Imported Vehicle"}
                   </h3>
 
                   <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-5">
-                    <span className="flex items-center gap-1.5">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      {car.year || "—"}
-                    </span>
-                    <span className="flex items-center gap-1.5 capitalize">
-                      <Fuel className="h-4 w-4 text-primary" />
-                      {car.engine_type || "—"}
-                    </span>
-                    <span className="flex items-center gap-1.5">
-                      <Gauge className="h-4 w-4 text-primary" />
-                      {car.mileage ? `${car.mileage.toLocaleString()} km` : "—"}
-                    </span>
+                    {car.body_type && (
+                      <span className="flex items-center gap-1.5 capitalize">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        {BODY_TYPE_LABELS[car.body_type] || car.body_type}
+                      </span>
+                    )}
+                    {car.import_type && (
+                      <span className="flex items-center gap-1.5 capitalize">
+                        <Fuel className="h-4 w-4 text-primary" />
+                        {IMPORT_LABELS[car.import_type] || car.import_type}
+                      </span>
+                    )}
+                    {car.drive_side && (
+                      <span className="flex items-center gap-1.5 uppercase">
+                        <Gauge className="h-4 w-4 text-primary" />
+                        {car.drive_side}
+                      </span>
+                    )}
                   </div>
 
                   <Link

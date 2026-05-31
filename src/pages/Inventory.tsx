@@ -18,25 +18,34 @@ interface CarImage {
 
 interface CarItem {
   id: number;
-  name: string;
-  make: string;
-  model: string;
-  year: number;
-  engine_type: string;
-  transmission: string;
-  mileage: number;
+  name?: string;
   price_from: number;
   price_to?: number;
   price_display: string;
-  color: string;
-  status: string;
   images?: CarImage[];
+  body_type?: string;
+  import_type?: string;
+  drive_side?: string;
+  trim_levels?: string;
+  trim_levels_list?: string[];
 }
 
-const STATUS_COLORS: Record<string, string> = {
-  available: "bg-emerald-500 text-white",
-  reserved: "bg-amber-400 text-stone-900",
-  new: "bg-blue-600 text-white",
+const BODY_TYPE_LABELS: Record<string, string> = {
+  hatchback: "Hatchback",
+  sedan: "Sedan",
+  suv: "SUV",
+  crossover: "Crossover",
+  wagon: "Wagon",
+  minivan: "Minivan",
+  pickup: "Pickup",
+  coupe: "Coupe",
+  convertible: "Convertible",
+  van: "Van",
+};
+
+const IMPORT_LABELS: Record<string, string> = {
+  japan_import: "Japan Import",
+  local: "Local",
 };
 
 function Inventory() {
@@ -47,10 +56,9 @@ function Inventory() {
 
   const [filters, setFilters] = useState({
     search: "",
-    engine_type: "",
-    status: "",
-    transmission: "",
-    min_year: "",
+    body_type: "",
+    import_type: "",
+    min_price: "",
     max_price: "",
   });
 
@@ -73,17 +81,16 @@ function Inventory() {
 
   const filteredCars = useMemo(() => {
     return cars.filter((car) => {
-      if (filters.engine_type && car.engine_type !== filters.engine_type) return false;
-      if (filters.status && car.status !== filters.status) return false;
-      if (filters.transmission && car.transmission?.toLowerCase() !== filters.transmission) return false;
-      if (filters.min_year && car.year < Number(filters.min_year)) return false;
+      if (filters.body_type && car.body_type !== filters.body_type) return false;
+      if (filters.import_type && car.import_type !== filters.import_type) return false;
+      if (filters.min_price && car.price_from < Number(filters.min_price)) return false;
       if (filters.max_price && car.price_from > Number(filters.max_price)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (
-          !car.make?.toLowerCase().includes(q) &&
-          !car.model?.toLowerCase().includes(q) &&
-          !car.name?.toLowerCase().includes(q)
+          !car.name?.toLowerCase().includes(q) &&
+          !car.body_type?.toLowerCase().includes(q) &&
+          !car.import_type?.toLowerCase().includes(q)
         ) return false;
       }
       return true;
@@ -92,7 +99,7 @@ function Inventory() {
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
   const clearFilters = () =>
-    setFilters({ search: "", engine_type: "", status: "", transmission: "", min_year: "", max_price: "" });
+    setFilters({ search: "", body_type: "", import_type: "", min_price: "", max_price: "" });
 
   if (loading) {
     return (
@@ -146,7 +153,7 @@ function Inventory() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search by make, model or name..."
+              placeholder="Search by vehicle name or type..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
               className="w-full pl-10 pr-4 py-3 border border-border rounded-xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -179,9 +186,8 @@ function Inventory() {
             className="bg-card border border-border rounded-2xl p-6 mb-8 grid grid-cols-2 md:grid-cols-5 gap-4"
           >
             {[
-              { label: "Engine", key: "engine_type", options: [["", "All Engines"], ["petrol", "Petrol"], ["diesel", "Diesel"], ["hybrid", "Hybrid"], ["electric", "Electric"]] },
-              { label: "Status", key: "status", options: [["", "All Statuses"], ["available", "Available"], ["reserved", "Reserved"], ["new", "New"]] },
-              { label: "Transmission", key: "transmission", options: [["", "All"], ["automatic", "Automatic"], ["manual", "Manual"]] },
+              { label: "Body Type", key: "body_type", options: [["", "All Body Types"], ["hatchback", "Hatchback"], ["sedan", "Sedan"], ["suv", "SUV"], ["crossover", "Crossover"], ["wagon", "Wagon"], ["minivan", "Minivan"], ["pickup", "Pickup"], ["coupe", "Coupe"], ["convertible", "Convertible"], ["van", "Van"]] },
+              { label: "Import Type", key: "import_type", options: [["", "All Imports"], ["japan_import", "Japan Import"], ["local", "Local"]] },
             ].map(({ label, key, options }) => (
               <div key={key}>
                 <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{label}</label>
@@ -196,9 +202,9 @@ function Inventory() {
             ))}
 
             <div>
-              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Min Year</label>
-              <input type="number" placeholder="e.g. 2018" value={filters.min_year}
-                onChange={(e) => setFilters({ ...filters, min_year: e.target.value })}
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Min Price (KES)</label>
+              <input type="number" placeholder="e.g. 500000" value={filters.min_price}
+                onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
                 className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
             </div>
             <div>
@@ -234,38 +240,37 @@ function Inventory() {
                 <div className="relative overflow-hidden h-60">
                   <img
                     src={getImageUrl(car)}
-                    alt={car.name || `${car.make} ${car.model}`}
+                    alt={car.name || car.body_type || "Vehicle"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.jpg"; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-                  <span className={`absolute top-3 left-3 text-xs px-3 py-1 rounded-full font-semibold capitalize ${STATUS_COLORS[car.status] || "bg-gray-600 text-white"}`}>
-                    {car.status}
-                  </span>
                 </div>
 
                 <div className="p-5">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {car.name || `${car.make} ${car.model}`}
+                    {car.name || car.body_type || "Imported Vehicle"}
                   </h3>
                   <p className="text-muted-foreground text-sm mb-3">
-                    {car.make} {car.model} &middot; {car.year}
+                    {[car.body_type && BODY_TYPE_LABELS[car.body_type], car.import_type && IMPORT_LABELS[car.import_type]]
+                      .filter(Boolean)
+                      .join(" · ") || "Imported car"}
                   </p>
 
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {car.engine_type && (
-                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize flex items-center gap-1">
-                        <Fuel className="h-3 w-3 text-primary" /> {car.engine_type}
-                      </span>
-                    )}
-                    {car.transmission && (
+                    {car.body_type && (
                       <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize">
-                        {car.transmission}
+                        {BODY_TYPE_LABELS[car.body_type] || car.body_type}
                       </span>
                     )}
-                    {car.mileage && (
-                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg flex items-center gap-1">
-                        <Gauge className="h-3 w-3 text-primary" /> {car.mileage.toLocaleString()} km
+                    {car.import_type && (
+                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize">
+                        {IMPORT_LABELS[car.import_type] || car.import_type}
+                      </span>
+                    )}
+                    {car.drive_side && (
+                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize">
+                        {car.drive_side.toUpperCase()}
                       </span>
                     )}
                   </div>

@@ -19,19 +19,10 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api"
 
 interface CarData {
   id: number;
-  name: string;
-  make: string;
-  model: string;
-  year: number;
+  name?: string;
   price_from: number;
   price_to?: number;
   price_display: string;
-  engine_type: string;
-  transmission: string;
-  mileage: number;
-  color: string;
-  grade?: string;
-  status?: string;
   features?: string;
   description?: string;
   images?: any[];
@@ -121,17 +112,19 @@ const CarDetail = () => {
   const handlePrevImage = () => setCurrentImageIndex((p) => (p - 1 + images.length) % images.length);
 
   const handleWhatsApp = () => {
-    const msg = encodeURIComponent(`Hi, I'm interested in the ${carData.name || `${carData.make} ${carData.model}`} listed on your website.`);
+    const vehicle = carData.name || carData.body_type || "this vehicle";
+    const msg = encodeURIComponent(`Hi, I'm interested in ${vehicle} listed on your website.`);
     window.open(`https://wa.me/254757356989?text=${msg}`, "_blank");
   };
   const handleCall = () => { window.location.href = `tel:+254757356989`; };
   const handleEmail = () => {
-    const s = encodeURIComponent(`Inquiry about ${carData.name || carData.make}`);
+    const vehicle = carData.name || carData.body_type || "this vehicle";
+    const s = encodeURIComponent(`Inquiry about ${vehicle}`);
     const b = encodeURIComponent(`Hello, I'm interested in this vehicle. Please provide more details.`);
     window.location.href = `mailto:localsays@gmail.com?subject=${s}&body=${b}`;
   };
 
-  const carTitle = carData.name || `${carData.make} ${carData.model}`;
+  const carTitle = carData.name || carData.body_type || "Imported vehicle";
   const bodyTypeLabel = carData.body_type ? (BODY_TYPE_LABELS[carData.body_type] || carData.body_type) : null;
   const importLabel = carData.import_type ? (IMPORT_LABELS[carData.import_type] || carData.import_type) : null;
   const driveLabel = carData.drive_side ? (DRIVE_LABELS[carData.drive_side] || carData.drive_side) : null;
@@ -143,19 +136,10 @@ const CarDetail = () => {
         : [];
 
   const specItems = [
-    { icon: <Fuel className="h-4 w-4 text-primary" />, label: "Engine", value: carData.engine_type },
-    { icon: <Settings className="h-4 w-4 text-primary" />, label: "Transmission", value: carData.transmission },
-    { icon: <Gauge className="h-4 w-4 text-primary" />, label: "Mileage", value: carData.mileage ? `${carData.mileage.toLocaleString()} km` : null },
-    { icon: <Calendar className="h-4 w-4 text-primary" />, label: "Year", value: String(carData.year) },
-    {
-      icon: (
-        <svg className="h-4 w-4 text-yellow-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-        </svg>
-      ),
-      label: "Grade", value: carData.grade,
-    },
-    { icon: null, label: "Color", value: carData.color },
+    { icon: <Fuel className="h-4 w-4 text-primary" />, label: "Body Type", value: bodyTypeLabel },
+    { icon: <Settings className="h-4 w-4 text-primary" />, label: "Import Type", value: importLabel },
+    { icon: <Gauge className="h-4 w-4 text-primary" />, label: "Drive Side", value: driveLabel },
+    { icon: null, label: "Trim Levels", value: trimList.join(", ") || null },
   ].filter((s) => s.value);
 
   return (

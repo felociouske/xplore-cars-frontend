@@ -13,7 +13,7 @@ const CarInventoryEnquiry: React.FC<CarInventoryEnquiryProps> = ({ car, onClose 
     full_name: "",
     email: "",
     phone: "",
-    vehicle_of_interest: car?.name || `${car?.make || ""} ${car?.model || ""}`.trim(),
+    vehicle_of_interest: car?.name || car?.body_type || "Imported Vehicle",
     budget_range: "",
     message: "",
   });
@@ -74,7 +74,7 @@ const CarInventoryEnquiry: React.FC<CarInventoryEnquiryProps> = ({ car, onClose 
         Get a Quote
       </h2>
       <p className="text-sm text-muted-foreground font-body mb-5">
-        For {car.name || `${car.make} ${car.model}`}
+        For {car.name || car.body_type || "This vehicle"}
       </p>
 
       <div className="flex gap-4 mb-6 p-3 bg-secondary rounded-xl">
@@ -86,10 +86,10 @@ const CarInventoryEnquiry: React.FC<CarInventoryEnquiryProps> = ({ car, onClose 
         />
         <div className="font-body">
           <p className="font-semibold text-foreground text-sm">
-            {car.make} {car.model} ({car.year})
+            {car.name || car.body_type || "Imported Vehicle"}
           </p>
           <p className="text-accent font-semibold text-sm mt-1">
-            KES {Number(car.price).toLocaleString()}
+            KES {Number(car.price_from).toLocaleString()}{car.price_to ? ` – ${Number(car.price_to).toLocaleString()}` : ""}
           </p>
         </div>
       </div>

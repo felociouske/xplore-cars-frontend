@@ -10,9 +10,13 @@ export const fetchCars = async () => {
 
     const normalizedData = (Array.isArray(data) ? data : data.results || []).map(car => ({
       ...car,
-      images: (car.images || []).map(img =>
-        img.image.startsWith("http") ? img.image : `${API_BASE_URL.replace("/api", "")}${img.image}`
-      ),
+      images: (car.images || [])
+        .map((img) => {
+          const path = typeof img === "string" ? img : img?.image;
+          if (!path) return null;
+          return path.startsWith("http") ? path : `${API_BASE_URL.replace("/api", "")}${path}`;
+        })
+        .filter(Boolean),
     }));
 
     return normalizedData;

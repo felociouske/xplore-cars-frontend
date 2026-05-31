@@ -19,10 +19,6 @@ const Hero = () => {
         <div className="grid md:grid-cols-2 gap-12 items-center">
           {/* Left Content */}
           <div className="space-y-8">
-            <div className="inline-flex items-center space-x-2 bg-white/80 border border-primary/20 rounded-full px-4 py-2 text-sm">
-              <Shield className="h-4 w-4 text-primary" />
-              <span className="text-black font-bold">Trusted Vehicle Importation Services</span>
-            </div>
 
             <div className="bg-white/80 p-8 rounded-2xl incline-block space-y-4">
               <h1 className="text-black text-5xl md:text-6xl font-bold leading-tight">
@@ -86,11 +82,6 @@ const Hero = () => {
             </div>
           </div>
           <div className="relative hidden md:block">
-            {/* Floating Stats Card */}
-            <div className="absolute -bottom-6 -left-6 bg-card border border-border rounded-xl p-6 shadow-large">
-              <p className="text-3xl font-bold text-primary">100+</p>
-              <p className="text-sm text-muted-foreground">Cars Imported</p>
-            </div>
           </div>
         </div>
       </div>
