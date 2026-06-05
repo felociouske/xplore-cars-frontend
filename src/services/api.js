@@ -111,3 +111,26 @@ export async function fetchTestimonials(filters = {}) {
     return [];
   }
 }
+
+export async function fetchBlogPosts() {
+  try {
+    const response = await fetch(`${API_BASE_URL}/blog/`);
+    if (!response.ok) throw new Error("Failed to fetch blog posts");
+    const data = await response.json();
+    return Array.isArray(data) ? data : data.results || [];
+  } catch (error) {
+    console.error("Error fetching blog posts:", error);
+    return [];
+  }
+}
+
+export async function fetchBlogPost(slug) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/blog/${slug}/`);
+    if (!response.ok) throw new Error("Failed to fetch blog post");
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching blog post:", error);
+    return null;
+  }
+}

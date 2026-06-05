@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, Link, Navigate } from "react-router-dom";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import DOMPurify from "dompurify";
 import {
   Phone, MessageCircle, Mail, ArrowLeft,
   Gauge, Settings, Fuel, Calendar, ChevronLeft, ChevronRight,
@@ -18,6 +17,7 @@ import CarInventoryEnquiry from "../components/CarInventoryEnquiry";
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
 interface CarData {
+  status?: string;
   id: number;
   name?: string;
   price_from: number;
@@ -308,9 +308,17 @@ const CarDetail = () => {
             <div className="bg-card border border-border rounded-2xl p-7">
               <h2 className="text-lg font-display font-semibold text-foreground mb-4">About This Vehicle</h2>
               {carData.description ? (
-                <div className="prose dark:prose-invert max-w-none leading-relaxed text-muted-foreground text-sm">
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>{carData.description}</ReactMarkdown>
-                </div>
+                <div 
+                  className="prose dark:prose-invert max-w-none leading-relaxed text-muted-foreground text-sm"
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(carData.description, {
+                      ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
+                                     'blockquote', 'ol', 'ul', 'li', 'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
+                                     'code', 'pre', 'hr', 'span', 'div', 'figure', 'figcaption'],
+                      ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'class', 'style', 'title'],
+                    }),
+                  }}
+                />
               ) : (
                 <p className="text-muted-foreground text-sm leading-relaxed">
                   No detailed description is available for this vehicle.
