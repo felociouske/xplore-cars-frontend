@@ -12,8 +12,7 @@ const Navbar = () => {
   const navLinks = [
     { name: "Home", path: "/" },
     { name: "Car Options", path: "/car-options" },
-    { name: "Blog", path: "/blog" },
-    { name: "Services", path: "/services" },
+    { name: "Blogs", path: "/blog" },
     { name: "Testimonials", path: "/#testimonials" },
     { name: "About Us", path: "/about" },
     { name: "Contact Us", path: "/contact" },
@@ -71,20 +70,6 @@ const Navbar = () => {
                         : "opacity-0 invisible -translate-y-2"
                     }`}
                   >
-                    <Link
-                      to="/services/car-importation"
-                      className="block px-4 py-2.5 text-sm font-body text-foreground hover:text-accent hover:bg-secondary transition-colors"
-                      onClick={() => setIsServicesOpen(false)}
-                    >
-                      Car Importation
-                    </Link>
-                    <Link
-                      to="/services/taxi-masterclass"
-                      className="block px-4 py-2.5 text-sm font-body text-foreground hover:text-accent hover:bg-secondary transition-colors"
-                      onClick={() => setIsServicesOpen(false)}
-                    >
-                      Kenya Taxi Business Advisory
-                    </Link>
                   </div>
                 </div>
               ) : link.name === "Testimonials" ? (
