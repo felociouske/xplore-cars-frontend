@@ -402,46 +402,6 @@ function Inventory() {
     <div className="min-h-screen flex flex-col bg-background transition-colors">
       <Navbar />
 
-      {/* Page Banner */}
-      <div className="relative bg-gradient-to-r from-blue-700 to-blue-600 py-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <img
-            src="/images/inventory-banner.jpg"
-            alt=""
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              (e.target as HTMLImageElement).style.display = "none";
-            }}
-          />
-        </div>
-        <div className="container mx-auto text-center relative z-10">
-          <motion.p
-            className="text-blue-200 text-sm uppercase tracking-widest font-medium mb-2"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-          >
-            Imported Direct from Japan
-          </motion.p>
-          <motion.h1
-            className="font-display text-4xl md:text-5xl font-bold text-white mb-3"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-          >
-            Vehicle Inventory
-          </motion.h1>
-          <motion.p
-            className="text-blue-100/80 max-w-xl mx-auto"
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-          >
-            Every vehicle personally inspected, verified, and imported with full documentation.
-          </motion.p>
-        </div>
-      </div>
-
       <main className="flex-1 container mx-auto px-4 py-10">
 
         {/* Mobile filter toggle */}
