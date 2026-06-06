@@ -9,7 +9,6 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Inventory from "./pages/Inventory";
 import CarDetail from "./pages/CarDetail";
-import Contact from "./pages/Contact";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import VehicleSourcing from "./pages/VehicleSourcing";
@@ -36,7 +35,6 @@ const App = () => {
             <Route path="/car-options/:id" element={<CarDetail />} />
             <Route path="/services/car-importation" element={<VehicleSourcing />} />
             <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <WhatsAppFloat />
