@@ -1,88 +1,119 @@
-import { Button } from "./ui/button";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRight, Shield, Globe, Zap, CheckCircle } from "lucide-react";
-import heroImage from "@/assets/hero-car.jpg";
+import { Button } from "./ui/button";
+import HeroCarFilter from "./HeroCarFilter";
+
+const HERO_IMAGES = [
+  "/image1.webp",
+  "/image2.webp",
+  "/image.png",
+];
 
 const Hero = () => {
+  const [current, setCurrent] = useState(0);
+  const [prev, setPrev] = useState<number | null>(null);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPrev(current);
+      setCurrent((c) => (c + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [current]);
+
   return (
-    <section className="relative overflow-hidden ">
-      {/* Background Image with Overlay */}
-      <div className="absolute inset-0 z-0">
+    <section className="relative overflow-hidden min-h-[90vh] flex flex-col justify-center">
+
+      {/* Background slides */}
+      {HERO_IMAGES.map((src, i) => (
         <div
-          className="w-full h-full bg-cover bg-center opacity-100"
-          style={{ backgroundImage: `url(${heroImage})` }}
-        />
-        <div/>
+          key={src}
+          className="absolute inset-0 z-0 transition-opacity duration-1000"
+          style={{ opacity: i === current ? 1 : 0 }}
+        >
+          <img
+            src={src}
+            alt=""
+            className="w-full h-full object-cover"
+            onError={(e) => {
+              (e.target as HTMLImageElement).style.display = "none";
+            }}
+          />
+        </div>
+      ))}
+
+      {/* Dark overlay — lighter than before */}
+      <div className="absolute inset-0 z-10 bg-black/50" />
+
+      {/* Slide indicators */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        {HERO_IMAGES.map((_, i) => (
+          <button
+            key={i}
+            onClick={() => { setPrev(current); setCurrent(i); }}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              i === current ? "w-8 bg-white" : "w-2 bg-white/40"
+            }`}
+          />
+        ))}
       </div>
 
-      <div className="container mx-auto px-4 py-20 md:py-28 relative z-10">
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          {/* Left Content */}
-          <div className="space-y-8">
+      {/* Content */}
+      <div className="container mx-auto px-4 py-20 relative z-20">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
 
-            <div className="bg-white/80 p-8 rounded-2xl incline-block space-y-4">
-              <h1 className="text-black text-5xl md:text-6xl font-bold leading-tight">
-                Trusted
-                <span className="block bg-gradient-to-r from-green-400 via-green-500 to-green-600 bg-clip-text text-transparent py-3">
-                  Global Shipping
-                </span>
-                Partners
-              </h1>
-              <p className="text-black/80 font-semibold max-w-xl p-6 rounded-xl  text-lg">
-                At <span className="text-black/80 font-semibold">Xplore Imports</span>, we make car importation 
-                simple, transparent, and stress-free. Whether you’re buying your 
-                <span className="text-black/80 font-semibold"> first car </span> 
-                or expanding your 
-                <span className="text-black/80 font-semibold"> taxi business</span>, we help you source 
-                <span className="text-black/80 font-semibold"> quality, affordable vehicles </span> 
-                from <span className="text-black/80 font-semibold">Japan</span> and handle everything 
-                from <span className="text-black/80 font-semibold">shipping</span> to 
-                <span className="text-black/80 font-semibold"> doorstep delivery</span>. 
-                We also teach our clients the ins and outs of importation through our 
-                <span className="text-black/80y font-semibold"> Car Importation Masterclass</span>. 
-                With us, you’re not just importing a car you’re gaining a 
-                <span className="text-black/80 font-semibold"> trusted partner</span>.
-              </p>
-            </div>
+          <h1 className="font-display text-5xl md:text-6xl font-bold text-white leading-tight">
+            Import Your Dream Car
+            <span className="block text-accent mt-1">
+              Directly from Japan
+            </span>
+          </h1>
 
-            <div className="flex flex-wrap gap-4">
-              <Button variant="hero" size="lg" asChild>
-                <Link to="/contact">
-                  Get Started Today
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button variant="green" size="lg" asChild>
-                <Link to="/car-options">Checkout Out Car Options</Link>
-              </Button>
-            </div>
+          <p className="text-white/75 text-lg max-w-xl mx-auto leading-relaxed">
+            At <span className="text-white font-semibold">Xplore Imports</span>, we handle car importations from Japan 
+            for our clients. We take care of the entire processm, from sourcing to delivery, ensuring a seamless experience.
+            We are government licenced importers. Our team of experts will help you find the perfect car and handle the process in a transparent 
+            and efficient manner. 
+          </p>
 
-            {/* Trust Badges */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-8">
-              <div className="bg-card border border-border rounded-lg p-4 text-center hover:shadow-medium transition-shadow">
-                <CheckCircle className="h-8 w-8 text-primary mx-auto mb-2" />
-                <p className="text-xs font-semibold text-primary">Quality</p>
-                <p className="text-xs text-muted-foreground">Assured</p>
-              </div>
-              <div className="bg-card border border-border rounded-lg p-4 text-center hover:shadow-medium transition-shadow">
-                <Zap className="h-8 w-8 text-accent mx-auto mb-2" />
-                <p className="text-xs font-semibold text-accent">Fast</p>
-                <p className="text-xs text-muted-foreground">Service</p>
-              </div>
-              <div className="bg-card border border-border rounded-lg p-4 text-center hover:shadow-medium transition-shadow">
-                <Globe className="h-8 w-8 text-primary mx-auto mb-2" />
-                <p className="text-xs font-semibold text-primary">Global</p>
-                <p className="text-xs text-muted-foreground">Sourcing</p>
-              </div>
-              <div className="bg-card border border-border rounded-lg p-4 text-center hover:shadow-medium transition-shadow">
-                <Shield className="h-8 w-8 text-accent mx-auto mb-2" />
-                <p className="text-xs font-semibold text-accent">Secure</p>
-                <p className="text-xs text-muted-foreground">Process</p>
-              </div>
-            </div>
+          {/* Filter */}
+          <div className="pt-4">
+            <HeroCarFilter />
           </div>
-          <div className="relative hidden md:block">
+
+          {/* CTA buttons */}
+          <div className="flex flex-wrap justify-center gap-4 pt-2">
+            <Button variant="hero" size="lg" asChild>
+              <Link to="/about">
+                About us
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button variant="green" size="lg" asChild>
+              <Link to="/car-options">Browse All Cars</Link>
+            </Button>
           </div>
+
+          {/* Trust badges */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-6 max-w-2xl mx-auto">
+            {[
+              { icon: CheckCircle, label: "Quality", sub: "Assured", color: "text-blue-300" },
+              { icon: Zap, label: "Fast", sub: "Service", color: "text-accent" },
+              { icon: Globe, label: "Global", sub: "Sourcing", color: "text-blue-300" },
+              { icon: Shield, label: "Secure", sub: "Process", color: "text-accent" },
+            ].map(({ icon: Icon, label, sub, color }) => (
+              <div
+                key={label}
+                className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl p-4 text-center"
+              >
+                <Icon className={`h-7 w-7 ${color} mx-auto mb-1.5`} />
+                <p className={`text-xs font-semibold ${color}`}>{label}</p>
+                <p className="text-xs text-white/50">{sub}</p>
+              </div>
+            ))}
+          </div>
+
         </div>
       </div>
     </section>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { fetchCars } from "../services/api";
 import { motion } from "framer-motion";
 import { fadeUp } from "../animations/fadeUp";
@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CarInventoryEnquiry from "../components/CarInventoryEnquiry";
 import CarEnquiryForm from "../components/CarEnquiryForm";
-import { SlidersHorizontal, X, Search, Fuel, Gauge, Car } from "lucide-react";
+import { SlidersHorizontal, X, Search, Car } from "lucide-react";
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || "http://127.0.0.1:8000/api";
 
@@ -19,6 +19,10 @@ interface CarImage {
 interface CarItem {
   id: number;
   name?: string;
+  make?: string;
+  model?: string;
+  year?: number;
+  category?: string;
   price_from: number;
   price_to?: number;
   price_display: string;
@@ -48,16 +52,27 @@ const IMPORT_LABELS: Record<string, string> = {
   local: "Local",
 };
 
+const CATEGORY_LABELS: Record<string, string> = {
+  available_to_import: "Available to Import",
+  successful_import: "Successful Import",
+  popular_in_kenya: "Popular in Kenya",
+};
+
 function Inventory() {
   const [cars, setCars] = useState<CarItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedCar, setSelectedCar] = useState<CarItem | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const [filters, setFilters] = useState({
     search: "",
+    make: searchParams.get("make") || "",
+    model: searchParams.get("model") || "",
+    year: searchParams.get("year") || "",
     body_type: "",
     import_type: "",
+    category: "",
     min_price: "",
     max_price: "",
   });
@@ -79,18 +94,29 @@ function Inventory() {
     return path.startsWith("http") ? path : `${API_BASE_URL.replace("/api", "")}${path}`;
   };
 
+  // Derive unique makes from loaded cars for the filter dropdown
+  const uniqueMakes = useMemo(
+    () => Array.from(new Set(cars.map((c) => c.make).filter(Boolean))).sort() as string[],
+    [cars]
+  );
+
   const filteredCars = useMemo(() => {
     return cars.filter((car) => {
+      if (filters.make && car.make !== filters.make) return false;
+      if (filters.model && car.model !== filters.model) return false;
+      if (filters.year && String(car.year) !== filters.year) return false;
       if (filters.body_type && car.body_type !== filters.body_type) return false;
       if (filters.import_type && car.import_type !== filters.import_type) return false;
+      if (filters.category && car.category !== filters.category) return false;
       if (filters.min_price && car.price_from < Number(filters.min_price)) return false;
       if (filters.max_price && car.price_from > Number(filters.max_price)) return false;
       if (filters.search) {
         const q = filters.search.toLowerCase();
         if (
           !car.name?.toLowerCase().includes(q) &&
-          !car.body_type?.toLowerCase().includes(q) &&
-          !car.import_type?.toLowerCase().includes(q)
+          !car.make?.toLowerCase().includes(q) &&
+          !car.model?.toLowerCase().includes(q) &&
+          !car.body_type?.toLowerCase().includes(q)
         ) return false;
       }
       return true;
@@ -98,8 +124,19 @@ function Inventory() {
   }, [cars, filters]);
 
   const activeFilterCount = Object.values(filters).filter(Boolean).length;
+
   const clearFilters = () =>
-    setFilters({ search: "", body_type: "", import_type: "", min_price: "", max_price: "" });
+    setFilters({
+      search: "",
+      make: "",
+      model: "",
+      year: "",
+      body_type: "",
+      import_type: "",
+      category: "",
+      min_price: "",
+      max_price: "",
+    });
 
   if (loading) {
     return (
@@ -130,16 +167,22 @@ function Inventory() {
           />
         </div>
         <div className="container mx-auto text-center relative z-10">
-          <motion.p className="text-blue-200 text-sm uppercase tracking-widest font-medium mb-2"
-            variants={fadeUp} initial="hidden" animate="visible">
+          <motion.p
+            className="text-blue-200 text-sm uppercase tracking-widest font-medium mb-2"
+            variants={fadeUp} initial="hidden" animate="visible"
+          >
             Imported Direct from Japan
           </motion.p>
-          <motion.h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-3"
-            variants={fadeUp} initial="hidden" animate="visible">
+          <motion.h1
+            className="font-display text-4xl md:text-5xl font-bold text-white mb-3"
+            variants={fadeUp} initial="hidden" animate="visible"
+          >
             Vehicle Inventory
           </motion.h1>
-          <motion.p className="text-blue-100/80 max-w-xl mx-auto"
-            variants={fadeUp} initial="hidden" animate="visible">
+          <motion.p
+            className="text-blue-100/80 max-w-xl mx-auto"
+            variants={fadeUp} initial="hidden" animate="visible"
+          >
             Every vehicle personally inspected, verified, and imported with full documentation.
           </motion.p>
         </div>
@@ -147,13 +190,13 @@ function Inventory() {
 
       <main className="flex-1 container mx-auto px-4 py-10">
 
-        {/* Search + Filter bar */}
+        {/* Search + Filter toggle bar */}
         <div className="flex flex-col md:flex-row gap-3 mb-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Search by vehicle name or type..."
+              placeholder="Search by make, model or body type..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
               className="w-full pl-10 pr-4 py-3 border border-border rounded-xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
@@ -172,61 +215,124 @@ function Inventory() {
             )}
           </button>
           {activeFilterCount > 0 && (
-            <button onClick={clearFilters} className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground hover:text-destructive transition">
-              <X className="h-4 w-4" /> Clear
+            <button
+              onClick={clearFilters}
+              className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground hover:text-destructive transition"
+            >
+              <X className="h-4 w-4" /> Clear all
             </button>
           )}
         </div>
 
-        {/* Filter panel */}
+        {/* Advanced filter panel */}
         {showFilters && (
           <motion.div
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-card border border-border rounded-2xl p-6 mb-8 grid grid-cols-2 md:grid-cols-5 gap-4"
+            className="bg-card border border-border rounded-2xl p-6 mb-8 grid grid-cols-2 md:grid-cols-4 gap-4"
           >
-            {[
-              { label: "Body Type", key: "body_type", options: [["", "All Body Types"], ["hatchback", "Hatchback"], ["sedan", "Sedan"], ["suv", "SUV"], ["crossover", "Crossover"], ["wagon", "Wagon"], ["minivan", "Minivan"], ["pickup", "Pickup"], ["coupe", "Coupe"], ["convertible", "Convertible"], ["van", "Van"]] },
-              { label: "Import Type", key: "import_type", options: [["", "All Imports"], ["japan_import", "Japan Import"], ["local", "Local"]] },
-            ].map(({ label, key, options }) => (
-              <div key={key}>
-                <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">{label}</label>
-                <select
-                  value={filters[key as keyof typeof filters]}
-                  onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}
-                  className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                >
-                  {options.map(([val, lbl]) => <option key={val} value={val}>{lbl}</option>)}
-                </select>
-              </div>
-            ))}
+            {/* Make */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Make</label>
+              <select
+                value={filters.make}
+                onChange={(e) => setFilters({ ...filters, make: e.target.value, model: "", year: "" })}
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="">All Makes</option>
+                {uniqueMakes.map((m) => (
+                  <option key={m} value={m}>{m}</option>
+                ))}
+              </select>
+            </div>
 
+            {/* Body Type */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Body Type</label>
+              <select
+                value={filters.body_type}
+                onChange={(e) => setFilters({ ...filters, body_type: e.target.value })}
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="">All Body Types</option>
+                {Object.entries(BODY_TYPE_LABELS).map(([val, lbl]) => (
+                  <option key={val} value={val}>{lbl}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Category</label>
+              <select
+                value={filters.category}
+                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="">All Categories</option>
+                {Object.entries(CATEGORY_LABELS).map(([val, lbl]) => (
+                  <option key={val} value={val}>{lbl}</option>
+                ))}
+              </select>
+            </div>
+
+            {/* Import Type */}
+            <div>
+              <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Import Type</label>
+              <select
+                value={filters.import_type}
+                onChange={(e) => setFilters({ ...filters, import_type: e.target.value })}
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="">All Imports</option>
+                <option value="japan_import">Japan Import</option>
+                <option value="local">Local</option>
+              </select>
+            </div>
+
+            {/* Min Price */}
             <div>
               <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Min Price (KES)</label>
-              <input type="number" placeholder="e.g. 500000" value={filters.min_price}
+              <input
+                type="number"
+                placeholder="e.g. 500000"
+                value={filters.min_price}
                 onChange={(e) => setFilters({ ...filters, min_price: e.target.value })}
-                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </div>
+
+            {/* Max Price */}
             <div>
               <label className="block text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Max Price (KES)</label>
-              <input type="number" placeholder="e.g. 2000000" value={filters.max_price}
+              <input
+                type="number"
+                placeholder="e.g. 2000000"
+                value={filters.max_price}
                 onChange={(e) => setFilters({ ...filters, max_price: e.target.value })}
-                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                className="w-full border border-border rounded-lg px-3 py-2.5 bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
             </div>
           </motion.div>
         )}
 
         <p className="text-sm text-muted-foreground mb-6">
-          Showing <span className="font-semibold text-foreground">{filteredCars.length}</span> vehicle{filteredCars.length !== 1 ? "s" : ""}
+          Showing <span className="font-semibold text-foreground">{filteredCars.length}</span>{" "}
+          vehicle{filteredCars.length !== 1 ? "s" : ""}
           {activeFilterCount > 0 && " matching your filters"}
         </p>
 
-        {/* Grid */}
+        {/* Car grid */}
         {filteredCars.length === 0 ? (
           <div className="text-center py-20">
             <Car className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-40" />
             <p className="text-muted-foreground">No vehicles match your filters.</p>
-            <button onClick={clearFilters} className="mt-3 text-primary underline underline-offset-4 text-sm">Clear filters</button>
+            <button
+              onClick={clearFilters}
+              className="mt-3 text-primary underline underline-offset-4 text-sm"
+            >
+              Clear filters
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -234,7 +340,10 @@ function Inventory() {
               <motion.div
                 key={car.id}
                 className="group bg-card border border-border rounded-2xl overflow-hidden hover:shadow-large hover:-translate-y-1 transition-all duration-300"
-                variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }}
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
                 transition={{ duration: 0.4, delay: index * 0.06 }}
               >
                 <div className="relative overflow-hidden h-60">
@@ -245,37 +354,44 @@ function Inventory() {
                     onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-car.jpg"; }}
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  {/* Category badge on image */}
+                  {car.category && (
+                    <div className="absolute top-3 left-3">
+                      <span className="bg-black/60 backdrop-blur-sm text-white text-xs px-2.5 py-1 rounded-lg font-medium">
+                        {CATEGORY_LABELS[car.category] || car.category}
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-5">
                   <h3 className="font-display text-lg font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
-                    {car.name || car.body_type || "Imported Vehicle"}
+                    {car.name || `${car.make || ""} ${car.model || ""}`.trim() || "Imported Vehicle"}
                   </h3>
+
                   <p className="text-muted-foreground text-sm mb-3">
-                    {[car.body_type && BODY_TYPE_LABELS[car.body_type], car.import_type && IMPORT_LABELS[car.import_type]]
+                    {[
+                      car.year && String(car.year),
+                      car.body_type && BODY_TYPE_LABELS[car.body_type],
+                      car.import_type && IMPORT_LABELS[car.import_type],
+                    ]
                       .filter(Boolean)
                       .join(" · ") || "Imported car"}
                   </p>
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     {car.body_type && (
-                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize">
+                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg">
                         {BODY_TYPE_LABELS[car.body_type] || car.body_type}
                       </span>
                     )}
-                    {car.import_type && (
-                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize">
-                        {IMPORT_LABELS[car.import_type] || car.import_type}
-                      </span>
-                    )}
                     {car.drive_side && (
-                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg capitalize">
-                        {car.drive_side.toUpperCase()}
+                      <span className="bg-secondary text-secondary-foreground text-xs px-2.5 py-1 rounded-lg uppercase">
+                        {car.drive_side}
                       </span>
                     )}
                   </div>
 
-                  {/* Price range */}
                   <div className="mb-4">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider mb-0.5">Price</p>
                     <p className="font-display text-xl font-bold text-foreground">
@@ -319,7 +435,12 @@ function Inventory() {
               accident history, and recall status before import.
             </p>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              {["Pre-shipment inspection (PSI)", "Full auction sheet verification", "Accident history check", "KEBS compliance check"].map((item) => (
+              {[
+                "Pre-shipment inspection (PSI)",
+                "Full auction sheet verification",
+                "Accident history check",
+                "KEBS compliance check",
+              ].map((item) => (
                 <li key={item} className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
                   {item}
