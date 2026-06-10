@@ -11,7 +11,6 @@ import Inventory from "./pages/Inventory";
 import CarDetail from "./pages/CarDetail";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
-import VehicleSourcing from "./pages/VehicleSourcing";
 
 import ScrollToTop from "./components/ScrollToTop";
 import WhatsAppFloat from "./components/WhatsAppFloat";
@@ -33,7 +32,6 @@ const App = () => {
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/car-options" element={<Inventory />} />
             <Route path="/car-options/:id" element={<CarDetail />} />
-            <Route path="/services/car-importation" element={<VehicleSourcing />} />
             <Route path="/about" element={<About />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
