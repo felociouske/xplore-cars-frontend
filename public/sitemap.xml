@@ -25,19 +25,19 @@
   <!-- Car sections — Google crawls section-level pages well -->
   <url>
     <loc>https://xplorecars.cc/car-options?section=successful_import</loc>
-    <lastmod>2025-06-13</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://xplorecars.cc/car-options?section=available_to_import</loc>
-    <lastmod>2025-06-13</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://xplorecars.cc/car-options?section=popular_import</loc>
-    <lastmod>2025-06-13</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -45,14 +45,14 @@
   <!-- Blog index — grows as posts are added -->
   <url>
     <loc>https://xplorecars.cc/blog</loc>
-    <lastmod>2025-06-13</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <!-- About -->
   <url>
     <loc>https://xplorecars.cc/about</loc>
-    <lastmod>2025-06-13</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -60,7 +60,7 @@
   <!-- Contact -->
   <url>
     <loc>https://xplorecars.cc/contact</loc>
-    <lastmod>2025-06-13</lastmod>
+    <lastmod>2026-06-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
