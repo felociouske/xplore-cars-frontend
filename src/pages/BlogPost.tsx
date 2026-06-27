@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Calendar, User, ArrowLeft, ArrowRight } from "lucide-react";
+import { Calendar, User, ArrowLeft, ArrowRight, Play } from "lucide-react";
 import DOMPurify from "dompurify";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -10,57 +10,90 @@ interface BlogPost {
   id: number;
   title: string;
   slug: string;
-  subtitle?: string;
+  meta_description?: string;
   cover_image_url?: string;
   content: string;
   author_name: string;
   published_at: string;
   created_at: string;
-  youtube_embed_url?: string;
   youtube_url?: string;
+}
+
+interface RelatedPost {
+  id: number;
+  title: string;
+  slug: string;
+  meta_description?: string;
+  cover_image_url?: string;
+  published_at: string;
+  created_at: string;
+  author_name: string;
 }
 
 function formatDate(dateStr: string) {
   if (!dateStr) return "";
   return new Date(dateStr).toLocaleDateString("en-KE", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    year: "numeric", month: "long", day: "numeric",
   });
+}
+
+function getYouTubeEmbedUrl(url?: string) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(url);
+    let videoId = "";
+
+    if (parsed.hostname.includes("youtu.be")) {
+      videoId = parsed.pathname.slice(1);
+    } else if (parsed.hostname.includes("youtube.com")) {
+      videoId = parsed.searchParams.get("v") || "";
+      if (!videoId) {
+        const segments = parsed.pathname.split("/").filter(Boolean);
+        const embedIndex = segments.indexOf("embed");
+        if (embedIndex !== -1 && segments.length > embedIndex + 1) {
+          videoId = segments[embedIndex + 1];
+        }
+      }
+    }
+
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+  } catch {
+    return null;
+  }
 }
 
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPost | null>(null);
-  const [related, setRelated] = useState<BlogPost[]>([]);
+  const [related, setRelated] = useState<RelatedPost[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showYoutubePopup, setShowYoutubePopup] = useState(false);
 
   useEffect(() => {
     if (!slug) return;
     setLoading(true);
     window.scrollTo(0, 0);
-
     Promise.all([fetchBlogPost(slug), fetchBlogPosts()]).then(([postData, allPosts]) => {
       setPost(postData);
-      const others = allPosts.filter((p: BlogPost) => p.slug !== slug).slice(0, 3);
-      setRelated(others);
+      setRelated(allPosts.filter((p: RelatedPost) => p.slug !== slug).slice(0, 3));
       setLoading(false);
+      if (postData && postData.youtube_url) {
+        setShowYoutubePopup(true);
+      } else {
+        setShowYoutubePopup(false);
+      }
     });
   }, [slug]);
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
-        <div className="container mx-auto px-4 py-20 animate-pulse space-y-6 max-w-3xl">
-          <div className="h-8 bg-secondary rounded w-3/4" />
-          <div className="h-4 bg-secondary rounded w-1/2" />
-          <div className="h-72 bg-secondary rounded-2xl" />
-          <div className="space-y-3">
-            {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-4 bg-secondary rounded" />
-            ))}
-          </div>
+        <div className="container mx-auto px-6 py-24 max-w-4xl animate-pulse space-y-5">
+          <div className="h-7 bg-gray-200 rounded w-3/4" />
+          <div className="h-4 bg-gray-200 rounded w-1/3" />
+          <div className="h-96 bg-gray-200 rounded mt-6" />
+          {[1,2,3,4,5].map(i => <div key={i} className="h-4 bg-gray-200 rounded" />)}
         </div>
         <Footer />
       </div>
@@ -69,13 +102,11 @@ const BlogPost = () => {
 
   if (!post) {
     return (
-      <div className="min-h-screen bg-background flex flex-col">
+      <div className="min-h-screen bg-white flex flex-col">
         <Navbar />
-        <div className="container mx-auto px-4 py-32 text-center">
-          <h1 className="font-display font-bold text-3xl text-foreground mb-4">Article not found</h1>
-          <Link to="/blog" className="text-accent hover:underline">
-            Back to all articles
-          </Link>
+        <div className="container mx-auto px-6 py-32 text-center">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Article not found</h1>
+          <Link to="/blog" className="text-blue-600 hover:underline font-semibold">← Back to all articles</Link>
         </div>
         <Footer />
       </div>
@@ -83,144 +114,153 @@ const BlogPost = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navbar />
 
-      <main className="flex-1">
-        {/* Cover image */}
-        {post.cover_image_url && (
-          <div className="w-full h-72 md:h-96 overflow-hidden">
-            <img
-              src={post.cover_image_url}
-              alt={post.title}
-              className="w-full h-full object-cover"
-            />
-          </div>
-        )}
+      {/* Cover image */}
+      {post.cover_image_url && (
+        <div className="w-3/4 h-full md:h-80 overflow-hidden mt-16 items-center mx-auto rounded-lg shadow-lg">
+          <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover" />
+        </div>
+      )}
 
-        <div className="container mx-auto px-4 py-12 max-w-3xl">
+      {!post.cover_image_url && <div className="h-16" />}
+
+      <main className="flex-1">
+        <div className="mx-auto px-6 py-12 max-w-full">
+
           {/* Back link */}
           <Link
             to="/blog"
-            className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent transition-colors mb-8"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-gray-900 mb-8 transition"
           >
-            <ArrowLeft className="h-4 w-4" /> Back to all articles
+            <ArrowLeft className="h-4 w-4" />
+            Back to Articles
           </Link>
+          {/* Main content */}
+          <div className="grid grid-cols-1 gap-8">
+            <div>
+              {/* Title */}
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+                {post.title}
+              </h1>
+              {/* Meta bar */}
+              <div className="flex items-center gap-5 text-sm font-medium text-gray-600 pb-6 mb-8 border-b border-gray-200">
+                <span className="flex items-center gap-1.5">
+                  <User className="h-4 w-4" />
+                  {post.author_name}
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4" />
+                  {formatDate(post.published_at || post.created_at)}
+                </span>
+              </div>
 
-          {/* Title & meta */}
-          <h1 className="font-display font-bold text-3xl md:text-4xl text-foreground leading-tight mb-3">
-            {post.title}
-          </h1>
+              {post.meta_description && (
+                <p className="text-xl text-gray-700 leading-relaxed mb-8 font-semibold">
+                  {post.meta_description}
+                </p>
+              )}
 
-          {post.subtitle && (
-            <p className="text-muted-foreground text-lg mb-6 leading-relaxed">
-              {post.subtitle}
-            </p>
-          )}
+              {/* Article content */}
+              <div
+                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                dangerouslySetInnerHTML={{
+                  __html: DOMPurify.sanitize(post.content, {
+                    ALLOWED_TAGS: ['p','br','strong','b','em','i','u','h1','h2','h3','h4','h5','h6',
+                                   'blockquote','ol','ul','li','a','img','table','thead','tbody','tr','th','td',
+                                   'code','pre','hr','span','div','figure','figcaption'],
+                    ALLOWED_ATTR: ['href','target','rel','src','alt','class','style','title','width','height'],
+                  }),
+                }}
+              />
 
-          <div className="flex items-center gap-5 text-sm text-muted-foreground mb-10 pb-6 border-b border-border">
-            <span className="flex items-center gap-1.5">
-              <User className="h-4 w-4" />
-              {post.author_name}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4" />
-              {formatDate(post.published_at || post.created_at)}
-            </span>
-          </div>
+              {/* YouTube section */}
+              {post.youtube_url && (
+                <div className="mt-12 pt-8 border-t border-gray-200">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4">Watch the Video</h3>
+                  <p className="text-gray-600 mb-4">
+                    This article has been covered in detail on our YouTube channel. Watch the video for more insights.
+                  </p>
+                  {getYouTubeEmbedUrl(post.youtube_url) ? (
+                    <div className="mx-auto max-w-3xl overflow-hidden rounded-3xl shadow-lg">
+                      <div className="aspect-video w-full">
+                          <iframe
+                            className="w-full h-full"
+                            src={getYouTubeEmbedUrl(post.youtube_url)!}
+                            title="YouTube video player"
+                            frameBorder="0"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                    </div>
+                  ) : (
+                    <a
+                      href={post.youtube_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded transition"
+                    >
+                      <Play className="h-5 w-5 fill-white" />
+                      Watch on YouTube
+                    </a>
+                  )}
+                </div>
+              )}
 
-          {/* HTML content from CKEditor */}
-          <div 
-            className="prose prose-neutral dark:prose-invert max-w-none
-            prose-headings:font-display prose-headings:text-foreground
-            prose-h2:text-2xl prose-h2:font-bold prose-h2:mt-10 prose-h2:mb-4
-            prose-h3:text-xl prose-h3:font-semibold prose-h3:mt-8 prose-h3:mb-3
-            prose-p:text-foreground/80 prose-p:leading-relaxed prose-p:mb-5
-            prose-li:text-foreground/80 prose-li:leading-relaxed
-            prose-strong:text-foreground prose-strong:font-semibold
-            prose-a:text-accent prose-a:no-underline hover:prose-a:underline
-            prose-table:border prose-table:border-border
-            prose-th:bg-secondary prose-th:p-3 prose-th:text-left prose-th:font-semibold
-            prose-td:p-3 prose-td:border prose-td:border-border
-            prose-hr:border-border prose-blockquote:border-l-accent
-            prose-blockquote:text-muted-foreground prose-blockquote:not-italic"
-            dangerouslySetInnerHTML={{
-              __html: DOMPurify.sanitize(post.content, {
-                ALLOWED_TAGS: ['p', 'br', 'strong', 'b', 'em', 'i', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 
-                               'blockquote', 'ol', 'ul', 'li', 'a', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td',
-                               'code', 'pre', 'hr', 'span', 'div', 'figure', 'figcaption'],
-                ALLOWED_ATTR: ['href', 'target', 'rel', 'src', 'alt', 'class', 'style', 'title'],
-              }),
-            }}
-          />
-
-
-          {/* YouTube embed */}
-          {post.youtube_embed_url && (
-            <div className="mt-12">
-              <h3 className="font-display font-bold text-xl text-foreground mb-4">
-                Watch the Video
-              </h3>
-              <div className="relative w-full" style={{ paddingBottom: "56.25%" }}>
-                <iframe
-                  src={post.youtube_embed_url}
-                  title={post.title}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="absolute inset-0 w-full h-full rounded-xl border border-border"
-                />
+              {/* Import CTA */}
+              <div className="mt-14 bg-gradient-to-r from-blue-900 to-blue-800 rounded p-8 text-center">
+                <p className="text-blue-200 text-sm font-bold uppercase tracking-wide mb-3">Ready to Import?</p>
+                <h3 className="text-3xl font-bold text-white mb-3">
+                  Let's find your perfect car from Japan
+                </h3>
+                <p className="text-blue-100 mb-6">
+                  Talk to our team and we'll guide you through the full process.
+                </p>
+                <Link
+                  to="/car-options"
+                  className="inline-flex items-center gap-2 bg-white text-blue-900 font-bold py-3 px-6 rounded hover:bg-gray-100 transition"
+                >
+                  Browse Available Cars
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
             </div>
-          )}
-
-          {/* CTA */}
-          <div className="mt-14 bg-secondary/60 border border-border rounded-2xl p-8 text-center">
-            <h3 className="font-display font-bold text-2xl text-foreground mb-2">
-              Ready to import your car?
-            </h3>
-            <p className="text-muted-foreground mb-6">
-              Talk to our team and we will guide you through the full process.
-            </p>
-            <Link
-              to="/contact"
-              className="inline-flex items-center gap-2 bg-accent text-accent-foreground px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-opacity"
-            >
-              Get a Free Quote <ArrowRight className="h-4 w-4" />
-            </Link>
           </div>
         </div>
 
-        {/* More articles */}
+        {/* More articles section */}
         {related.length > 0 && (
-          <div className="border-t border-border bg-secondary/30">
-            <div className="container mx-auto px-4 py-14">
-              <h2 className="font-display font-bold text-2xl text-foreground mb-8">
-                More Articles
-              </h2>
+          <div className="border-t border-gray-200 bg-gray-50 mt-16">
+            <div className="container mx-auto px-6 py-14 max-w-4xl">
+              <h2 className="text-3xl font-bold text-gray-900 mb-8">More Articles</h2>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {related.map((item) => (
                   <Link
                     key={item.id}
                     to={`/blog/${item.slug}`}
-                    className="group bg-card border border-border rounded-xl overflow-hidden hover:shadow-medium transition-all duration-300"
+                    className="bg-white rounded-lg overflow-hidden group hover:shadow-lg transition-shadow duration-300"
                   >
                     {item.cover_image_url ? (
-                      <img
-                        src={item.cover_image_url}
-                        alt={item.title}
-                        className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                      <div className="h-48 overflow-hidden">
+                        <img
+                          src={item.cover_image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
                     ) : (
-                      <div className="w-full h-40 bg-secondary" />
+                      <div className="w-full h-48 bg-gray-200" />
                     )}
                     <div className="p-4">
-                      <p className="text-xs text-muted-foreground mb-1">
+                      <p className="text-xs font-semibold text-gray-500 uppercase mb-2">
                         {formatDate(item.published_at || item.created_at)}
                       </p>
-                      <h3 className="font-display font-semibold text-foreground text-base leading-snug group-hover:text-accent transition-colors">
+                      <h3 className="font-bold text-gray-900 text-base leading-snug group-hover:text-blue-600 transition">
                         {item.title}
                       </h3>
-                      <span className="inline-flex items-center gap-1 text-xs text-accent mt-2 font-medium">
+                      <span className="inline-flex items-center gap-1 text-blue-600 font-semibold text-sm mt-3">
                         Read more <ArrowRight className="h-3 w-3" />
                       </span>
                     </div>
@@ -231,6 +271,21 @@ const BlogPost = () => {
           </div>
         )}
       </main>
+
+      {showYoutubePopup && post && post.youtube_url && (
+        <div className="fixed bottom-6 right-6 z-50 max-w-xs bg-white shadow-lg rounded-lg p-4 flex flex-col gap-3">
+          <div className="flex items-start gap-3">
+            <div className="flex-1">
+              <p className="font-semibold">Watch on YouTube</p>
+              <p className="text-sm text-gray-600">This article has a video. Open it on YouTube?</p>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <a href={post.youtube_url} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-red-600 text-white rounded">Open</a>
+            <button onClick={() => setShowYoutubePopup(false)} className="px-3 py-1 border rounded">Dismiss</button>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </div>

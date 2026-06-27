@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,105 +6,219 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 12%;
+    /* ── Core palette ── */
+    --background: 210 20% 97%;          /* #F4F6F9 bone white */
+    --foreground: 214 47% 12%;          /* #0F2035 near-black navy */
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 12%;
+    --card-foreground: 214 47% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 12%;
+    --popover-foreground: 214 47% 12%;
 
-    /* Primary: refined steel blue */
-    --primary: 213 78% 46%;
+    /* Primary: deep navy */
+    --primary: 214 64% 15%;             /* #0A2240 */
     --primary-foreground: 0 0% 100%;
 
-    /* Secondary: light blue-gray tint */
-    --secondary: 213 30% 94%;
-    --secondary-foreground: 215 25% 20%;
+    /* Secondary: light slate */
+    --secondary: 210 18% 93%;
+    --secondary-foreground: 214 47% 20%;
 
-    --muted: 213 20% 94%;
-    --muted-foreground: 215 15% 48%;
+    --muted: 210 15% 90%;
+    --muted-foreground: 214 15% 48%;
 
-    /* Accent: clean emerald green */
-    --accent: 152 58% 38%;
+    /* Accent: forest green — used for CTAs only */
+    --accent: 155 67% 32%;              /* #1B8F5A */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 213 20% 88%;
-    --input: 213 20% 88%;
-    --ring: 213 78% 46%;
+    --border: 214 18% 85%;
+    --input: 214 18% 85%;
+    --ring: 214 64% 15%;
 
-    --radius: 0.625rem;
+    --radius: 0.375rem;                 /* slightly squarer — less bubbly */
 
-    --shadow-soft: 0 2px 8px hsl(213 78% 46% / 0.08);
-    --shadow-medium: 0 8px 24px hsl(213 78% 46% / 0.12);
-    --shadow-large: 0 16px 40px hsl(213 78% 46% / 0.16);
-  }
-
-  .dark {
-    --background: 215 30% 8%;
-    --foreground: 210 20% 94%;
-
-    --card: 215 28% 11%;
-    --card-foreground: 210 20% 94%;
-
-    --popover: 215 28% 11%;
-    --popover-foreground: 210 20% 94%;
-
-    --primary: 213 72% 58%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 215 25% 16%;
-    --secondary-foreground: 210 20% 85%;
-
-    --muted: 215 25% 16%;
-    --muted-foreground: 215 15% 55%;
-
-    --accent: 152 52% 46%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 63% 45%;
-    --destructive-foreground: 210 20% 94%;
-
-    --border: 215 25% 18%;
-    --input: 215 25% 18%;
-    --ring: 213 72% 58%;
+    /* Custom shadows */
+    --shadow-card: 0 1px 4px rgba(10,34,64,0.08), 0 4px 16px rgba(10,34,64,0.06);
+    --shadow-hover: 0 4px 24px rgba(10,34,64,0.14);
   }
 }
 
 @layer base {
   * {
     @apply border-border;
+    box-sizing: border-box;
   }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', sans-serif;
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 {
-    font-family: 'Sora', sans-serif;
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'IBM Plex Serif', Georgia, serif;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    font-family: 'IBM Plex Sans', sans-serif;
   }
 }
 
 @layer utilities {
+  /* Typography */
   .font-display {
-    font-family: 'Sora', sans-serif;
+    font-family: 'IBM Plex Serif', Georgia, serif;
   }
-  .shadow-soft {
-    box-shadow: var(--shadow-soft);
+  .font-sans {
+    font-family: 'IBM Plex Sans', sans-serif;
   }
-  .shadow-medium {
-    box-shadow: var(--shadow-medium);
+
+  /* Consistent button base */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold font-sans
+           bg-accent text-white rounded transition-all duration-200
+           hover:bg-[#157a4b] focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2;
   }
-  .shadow-large {
-    box-shadow: var(--shadow-large);
+  .btn-outline {
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold font-sans
+           border-2 border-primary text-primary rounded transition-all duration-200
+           hover:bg-primary hover:text-white focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2;
   }
-  .bg-hero-gradient {
-    background: linear-gradient(135deg, hsl(213 78% 46%) 0%, hsl(213 78% 32%) 100%);
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-medium font-sans
+           text-foreground rounded transition-colors hover:bg-secondary;
   }
-  .bg-accent-gradient {
-    background: linear-gradient(135deg, hsl(152 58% 38%) 0%, hsl(152 58% 28%) 100%);
+
+  /* Section spacing */
+  .section {
+    @apply py-16 md:py-24;
   }
+  .section-sm {
+    @apply py-10 md:py-16;
+  }
+
+  /* Card */
+  .card-clean {
+    background: white;
+    border: 1px solid hsl(var(--border));
+    box-shadow: var(--shadow-card);
+    border-radius: var(--radius);
+  }
+  .card-clean:hover {
+    box-shadow: var(--shadow-hover);
+  }
+
+  /* Rule divider */
+  .rule {
+    @apply border-t border-border;
+  }
+
+  /* Eyebrow label — used above section headings */
+  .eyebrow {
+    @apply text-xs font-semibold font-sans uppercase tracking-[0.14em] text-accent;
+  }
+
+  /* Vintage page utilities */
+  .vintage-hero {
+    background: radial-gradient(circle at top left, rgba(27,143,90,0.08), transparent 40%),
+                radial-gradient(circle at bottom right, rgba(10,34,64,0.06), transparent 25%),
+                hsl(var(--background));
+  }
+
+  .vintage-card {
+    position: relative;
+    background: hsl(39 53% 96%);
+    border: 1px solid hsl(var(--border));
+    border-radius: 1.25rem;
+    box-shadow: 0 12px 30px rgba(10,34,64,0.08);
+  }
+
+  .vintage-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px dashed rgba(10,34,64,0.14);
+    border-radius: 1.25rem;
+    pointer-events: none;
+  }
+
+  .vintage-panel {
+    background: hsl(39 53% 99%);
+    border: 1px solid hsl(var(--border));
+    border-radius: 1rem;
+    box-shadow: 0 8px 20px rgba(10,34,64,0.06);
+  }
+
+  .vintage-eyebrow {
+    @apply text-[11px] font-semibold font-sans uppercase tracking-[0.3em] text-foreground/70 mb-4;
+    letter-spacing: 0.26em;
+  }
+
+  .vintage-dot {
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 9999px;
+    background: hsl(var(--accent));
+    box-shadow: 0 0 0 3px rgba(27,143,90,0.14);
+  }
+
+  /* Price display */
+  .price-tag {
+    font-family: 'IBM Plex Serif', serif;
+    @apply text-xl font-semibold text-primary;
+  }
+
+  /* Prose for blog content */
+  .blog-prose {
+    @apply text-foreground leading-relaxed;
+  }
+  .blog-prose h2 {
+    font-family: 'IBM Plex Serif', serif;
+    @apply text-2xl font-semibold mt-10 mb-4 text-primary;
+  }
+  .blog-prose h3 {
+    font-family: 'IBM Plex Serif', serif;
+    @apply text-xl font-semibold mt-8 mb-3 text-primary;
+  }
+  .blog-prose p {
+    @apply mb-5 text-[17px] leading-[1.75];
+  }
+  .blog-prose ul, .blog-prose ol {
+    @apply pl-5 mb-5 space-y-1.5;
+  }
+  .blog-prose li {
+    @apply text-[17px] leading-relaxed;
+  }
+  .blog-prose blockquote {
+    @apply border-l-4 border-accent pl-5 italic text-muted-foreground my-6;
+  }
+  .blog-prose strong {
+    @apply font-semibold text-foreground;
+  }
+  .blog-prose a {
+    @apply text-accent underline underline-offset-4 hover:text-[#157a4b];
+  }
+  .blog-prose img {
+    @apply rounded my-6 w-full;
+  }
+  .blog-prose table {
+    @apply w-full border-collapse text-sm mb-6;
+  }
+  .blog-prose th {
+    @apply bg-secondary text-left px-4 py-2 font-semibold border border-border;
+  }
+  .blog-prose td {
+    @apply px-4 py-2 border border-border;
+  }
+
+  /* Utility */
+  .shadow-card { box-shadow: var(--shadow-card); }
+  .shadow-hover { box-shadow: var(--shadow-hover); }
 }

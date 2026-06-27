@@ -1,308 +1,398 @@
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { fadeUp } from "../animations/fadeUp";
 import { motion } from "framer-motion";
-import {
-  MapPin, Phone, Mail, Clock,
-  MessageCircle, Facebook, Instagram, ArrowRight,
-} from "lucide-react";
 import { Link } from "react-router-dom";
-import EnquiryForm from "@/components/EnquiryForm";
-
-// ── Update these paths with your actual images ──
-const GALLERY_IMAGES = [
-  { src: "/images/xplore/gallery-01.jpg", alt: "Xplore Cars delivery 1" },
-  { src: "/images/xplore/gallery-02.jpg", alt: "Xplore Cars delivery 2" },
-  { src: "/images/xplore/gallery-03.jpg", alt: "Xplore Cars delivery 3" },
-  { src: "/images/xplore/gallery-04.jpg", alt: "Xplore Cars delivery 4" },
-  { src: "/images/xplore/gallery-05.jpg", alt: "Xplore Cars delivery 5" },
-  { src: "/images/xplore/gallery-06.jpg", alt: "Xplore Cars delivery 6" },
-  { src: "/images/xplore/gallery-07.jpg", alt: "Xplore Cars delivery 7" },
-  { src: "/images/xplore/gallery-08.jpg", alt: "Xplore Cars delivery 8" },
-  { src: "/images/xplore/gallery-09.jpg", alt: "Xplore Cars delivery 9" },
-  { src: "/images/xplore/gallery-10.jpg", alt: "Xplore Cars delivery 10" },
-  { src: "/images/xplore/gallery-11.jpg", alt: "Xplore Cars delivery 11" },
-  { src: "/images/xplore/gallery-12.jpg", alt: "Xplore Cars delivery 12" },
-  { src: "/images/xplore/gallery-13.jpg", alt: "Xplore Cars delivery 13" },
-];
 
 const About = () => {
+  const [expandedImage, setExpandedImage] = useState<number | null>(null);
+
   return (
     <div className="min-h-screen flex flex-col bg-background transition-colors">
       <Navbar />
 
-      {/* ── HERO with background image ── */}
-      <section className="relative min-h-[480px] flex items-center overflow-hidden">
-        <img
-          src="/image.png"
-          alt="Xplore Cars Kenya"
-          className="absolute inset-0 w-full h-full object-cover object-center"
-          onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/60 to-black/20" />
-
-        <div className="relative z-10 container flex float-col justify-center items-center mx-auto px-4 py-24">
-          <motion.div variants={fadeUp} initial="hidden" animate="visible" className="max-w-2xl">
-            <p className="text-primary text-xs font-semibold uppercase tracking-widest mb-4">
-              Government Registered · Nairobi, Kenya
-            </p>
-            <h1 className="font-display text-4xl md:text-6xl font-bold text-white leading-tight mb-5">
-              About <span className="text-primary">Xplore Cars</span>
-            </h1>
-            <p className="text-white/75 text-lg leading-relaxed max-w-xl">
-              Making it easy for Kenyans to own quality cars imported directly from
-              verified auctions in Japan, handled end to end, and delivered to your door.
-            </p>
-          </motion.div>
-        </div>
-      </section>
-
       <main className="flex-1">
+        <section className="vintage-hero border-b border-border overflow-hidden justify-center">
+          <div className="container mx-auto px-4 max-w-6xl py-16 md:py-24">
+            <div className="flex justify-center">
+              <div className="space-y-6 max-w-3xl mx-auto text-center">
+                <h1 className="font-display text-4xl md:text-6xl font-semibold text-foreground leading-tight tracking-[-0.03em]">
+                  Our Signature
+                </h1>
+                <p className="max-w-2xl text-base md:text-lg leading-relaxed text-foreground/85">
+                  Xplore is not your regular car importer! We pride ourselves in quality cars that give you peace of mind for many years.
+                   We specialize in sourcing high grade cars with low mileage below 50,000 Km. We conduct heavy due diligence to ensure all our cars
+                   have no accident history, hailstone damage, open manufaturer recall, or multiple past owners.
+                   Looking to own a car with confidence? Try Xplore Imports.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-        {/* ── Our Story ── */}
-        <section className="py-20">
-          <div className="container mx-auto px-4 max-w-5xl">
-            <div className="grid lg:grid-cols-2 gap-14 items-start">
+        <section className="py-16 border-b border-border">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] items-start">
+              <div className="space-y-6">
+                <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+                  What makes our imports stand out?
+                </h2>
+                <p className="text-muted-foreground leading-relaxed text-sm md:text-base max-w-2xl">
+                  Xplore is not your regular car importer! We pride ourselves in quality cars that give you peace of mind for many years.
+                  We specialize in sourcing high-grade cars with low mileage below 50,000 km. We conduct thorough due diligence to ensure all our cars
+                  have no accident history, hailstone damage, open manufacturer recalls, or multiple past owners.
+                </p>
+                <div className="space-y-4 pt-2">
+                  {[
+                    {
+                      title: "We source the car with you",
+                      body: "Before we purchase the car from our suppliers or auction, we analyze it thoroughly until you are 100% satisfied and give us the green light to proceed. In short, we only purchase what you want and not what is being sold.",
+                    },
+                    {
+                      title: "We go beyond the photos",
+                      body: "Xplore conducts due diligence beyond just the photos. We check the car's past ownership and usage to detect any red flags that could compromise its quality. We never purchase a car without an auction sheet.",
+                    },
+                    {
+                      title: "Flexible payment",
+                      body: "We offer flexible payment in two equal instalments of 50% each, giving you time to put your finances together.",
+                    },
+                    {
+                      title: "Open communication and reassurance",
+                      body: "The Xplore team is very open about sharing information and keeping you updated on your car's progress. We understand that importing your first car can be daunting, so we share every detail you need to feel confident that the process is under control.",
+                    },
+                  ].map((item) => (
+                    <div key={item.title} className="space-y-1">
+                      <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+                    </div>
+                  ))}
+                </div>
+                <p>
+                  Looking to own a car with confidence? Try Xplore Imports.
+                </p>
+              </div>
+
+              <div className="grid gap-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {[
+                    {
+                      src: "/suzuki.jpg",
+                      alt: "Suzuki Alto with premium import styling",
+                      title: "Suzuki Alto",
+                      label: "Big",
+                    },
+                    {
+                      src: "/mazdaa.jpg",
+                      alt: "Premium Mazda Cx5",
+                      title: "Mazda CX5",
+                      label: "Bigger",
+                    },
+                  ].map((image, index) => (
+                    <button
+                      key={image.src}
+                      type="button"
+                      onClick={() => setExpandedImage(index)}
+                      className="group relative overflow-hidden rounded-[1.75rem] shadow-card focus:outline-none focus:ring-2 focus:ring-accent"
+                    >
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full aspect-[4/3] object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 py-4 text-white">
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-start">{image.label}</p>
+                        <p className="mt-2 text-lg font-semibold text-start">{image.title}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols">
+                  {[
+                    {
+                      src: "/prado.jpg",
+                      alt: "Bigger Toyota Prado",
+                      title: "Toyota Prado",
+                    },
+                    {
+                      src: "/prado.jpeg",
+                      alt: "Bigger Toyota Prado",
+                      title: "Toyota Prado",
+                    },
+                  ].map((image, index) => (
+                    <button
+                      key={image.src}
+                      type="button"
+                      onClick={() => setExpandedImage(index + 2)}
+                      className="group relative overflow-hidden rounded-[1.75rem] shadow-card focus:outline-none focus:ring-2 focus:ring-accent"
+                    >
+                      <img
+                        src={image.src}
+                        alt={image.alt}
+                        className="w-full aspect-[4/3] object-cover transition-transform duration-300 group-hover:scale-105"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+                      />
+                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent px-4 py-4 text-white">
+                        <p className="text-[11px] uppercase tracking-[0.3em] text-start">Biggest</p>
+                        <p className="mt-2 text-lg font-semibold text-start">{image.title}</p>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {expandedImage !== null && (
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4">
+              <button
+                type="button"
+                onClick={() => setExpandedImage(null)}
+                className="absolute right-4 top-4 rounded-full bg-white/90 p-3 text-foreground shadow-lg"
+                aria-label="Close image preview"
+              >
+                ×
+              </button>
+              <div className="max-w-[90vw] max-h-[90vh] overflow-hidden rounded-3xl shadow-2xl">
+                <img
+                  src={["/suzuki.jpg", "/mazdaa.jpg", "/suzuki.jpg", "/prado.jpeg"][expandedImage]}
+                  alt="Expanded gallery image"
+                  className="w-full h-full object-contain bg-black"
+                />
+              </div>
+            </div>
+          )}
+        </section>
+
+        <section className="py-16 border-b border-border">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="mb-12 max-w-3xl">
+              <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+                Core values we value most
+              </h2>
+            </div>
+
+            <div className="grid gap-8 lg:grid-cols-3">
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="vintage-card p-8"
+              >
+                <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                  Honesty
+                </h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  We source cars from verified auctions in Japan, inspect them, and give you full
+                  pricing details before you commit.
+                </p>
+              </motion.div>
 
               <motion.div
                 variants={fadeUp}
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
+                className="vintage-card p-8"
               >
-                <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">
-                  Our Story
+                <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                  Communication
+                </h3>
+                <p>
+                  We give clear information and keeping you updated on your car's progress every step of the way. 
                 </p>
-                <h2 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-6 leading-tight">
-                  Importing Your Dream Car,<br />Made Simple
+              </motion.div>
+
+              <motion.div
+                variants={fadeUp}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                className="vintage-card p-8"
+              >
+                <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                  Trust
+                </h3>
+                <p className="text-muted-foreground leading-relaxed text-sm">
+                  Customers return because we treat every order like a handshake: clear, honest and
+                  backed by experience.
+                </p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 border-b border-border">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="flex flex-col justify-center items-center">
+              <div>
+                <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+                  How we import your car, step by step.
                 </h2>
-                <div className="space-y-4 text-muted-foreground leading-relaxed text-[15px]">
-                  <p>
-                    At <strong className="text-foreground">Xplore Cars Imports</strong> we make
-                    it easy for Kenyans to own their cars by importing cars for them. We choose
-                    high quality cars from trusted and verified car auctioneers in Japan. We make
-                    sure that the car meets the requirements before we bid it. We also advise on
-                    the best cars to choose based on your conditions.
-                  </p>
-                  <p>
-                    We handle importation, custom clearance and delivery to Nairobi from Mombasa.
-                  </p>
-                  <p>
-                    We make car importation simple, transparent and stress free with everyday
-                    updates of the whereabouts of the car.
-                  </p>
-                  <p className="font-semibold text-foreground text-base">
-                    Import your dream car with Xplore Cars Importers.
-                  </p>
+                <p className="mt-5 text-muted-foreground leading-relaxed max-w-xl mb-5">
+                  A straightforward process built around you — from the first conversation to the moment your car pulls up at your door.
+                </p>
+              </div>
+
+              <div className="space-y-8">
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                    <span className="h-full w-px bg-border" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 1</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      Contact us and tell us exactly what you're looking for. We discuss every detail make, model, budget, and preferences, and answer all your questions before you commit to anything.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                    <span className="h-full w-px bg-border" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 2</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      Once you're ready to proceed, you pay a security deposit. This kickstarts the search, we begin bidding at auction or browsing trusted Japanese dealers on your behalf.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                    <span className="h-full w-px bg-border" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 3</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      We present you with the best available option. You review it, ask any questions, and only when you're happy do we bid and secure the car with our professional guidance throughout.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                    <span className="h-full w-px bg-border" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 4</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      Pay the remaining balance (full invoice value minus your deposit) and we ship your car immediately. No delays, no surprises.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                    <span className="h-full w-px bg-border" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 5</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      We keep you updated as your car makes its journey to Mombasa port. You'll always know where it is and when to expect it.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                    <span className="h-full w-px bg-border" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 6</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      We handle customs clearance at Mombasa and arrange doorstep delivery straight to you wherever you are in Kenya.
+                    </p>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  variants={fadeUp}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  className="flex gap-5"
+                >
+                  <div className="flex flex-col items-center gap-3">
+                    <span className="vintage-dot" />
+                  </div>
+                  <div className="vintage-panel p-8">
+                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 7</p>
+                    <p className="text-muted-foreground leading-relaxed text-sm">
+                      We'd love to hear how it went. Share your feedback and, if you're happy, a car review video with us. Your experience helps the next buyer trust the process just as you did.
+                    </p>
+                  </div>
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16">
+          <div className="container mx-auto px-4 max-w-5xl">
+            <motion.div variants={fadeUp} initial="hidden" whileInView="visible" viewport={{ once: true }} className="vintage-card overflow-hidden p-10 lg:p-14">
+              <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] items-center">
+                <div>
+                  <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+                    Are you ready to import your perfect car with us?.
+                  </h2>
                 </div>
 
-                {/* Trust badge */}
-                <div className="mt-8 flex items-center gap-3 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800 rounded-2xl px-5 py-4 w-fit">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <svg className="h-5 w-5 text-white" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-foreground">Government Registered Company</p>
-                    <p className="text-xs text-muted-foreground">Licensed & compliant with Kenyan law</p>
-                  </div>
-                </div>
-
-                {/* Handpick CTA */}
-                <div className="mt-8 bg-primary/5 border border-primary/20 rounded-2xl p-6">
-                  <p className="font-display text-lg font-bold text-foreground mb-2">
-                    Handpick your dream car
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Browse our full inventory of quality vehicles imported directly from Japan 
-                    filtering by make, model, body type and budget.
-                  </p>
-                  <Link
-                    to="/car-options"
-                    className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-primary/90 transition-colors"
-                  >
-                    Browse Inventory
-                    <ArrowRight className="h-4 w-4" />
+                <div className="flex flex-col gap-4 sm:flex-row sm:justify-end">
+                  <Link to="/contact" className="btn-outline">
+                    Contact Us
                   </Link>
                 </div>
-              </motion.div>
-
-              {/* Contact details + form */}
-              <motion.div
-                variants={fadeUp}
-                initial="hidden"
-                whileInView="visible"
-                viewport={{ once: true }}
-                className="space-y-5"
-              >
-                {/* Contact cards */}
-                {[
-                  {
-                    icon: MapPin,
-                    bg: "#5DCAA5", fg: "#04342C",
-                    label: "Location",
-                    value: "New Rain, along Kenyatta Road, Nairobi",
-                    href: null,
-                  },
-                  {
-                    icon: Phone,
-                    bg: "#378ADD", fg: "#042C53",
-                    label: "Call / WhatsApp",
-                    value: "+254 757 356 989",
-                    href: "tel:+254757356989",
-                  },
-                  {
-                    icon: Mail,
-                    bg: "#EF9F27", fg: "#412402",
-                    label: "Email",
-                    value: "localsays@gmail.com",
-                    href: "mailto:localsays@gmail.com",
-                  },
-                  {
-                    icon: Clock,
-                    bg: "#7F77DD", fg: "#26215C",
-                    label: "Business Hours",
-                    value: "Mon–Fri: 8:00 AM – 6:00 PM\nSat: 9:00 AM – 4:00 PM",
-                    href: null,
-                  },
-                ].map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <div
-                      key={item.label}
-                      className="flex items-start gap-4 bg-card border border-border rounded-2xl px-5 py-4 hover:border-primary/40 hover:shadow-sm transition-all"
-                    >
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
-                        style={{ backgroundColor: item.bg }}
-                      >
-                        <Icon className="h-5 w-5" style={{ color: item.fg }} />
-                      </div>
-                      <div>
-                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-0.5">
-                          {item.label}
-                        </p>
-                        {item.href ? (
-                          <a
-                            href={item.href}
-                            className="text-sm font-semibold text-foreground hover:text-primary transition-colors"
-                          >
-                            {item.value}
-                          </a>
-                        ) : (
-                          <p className="text-sm font-semibold text-foreground whitespace-pre-line">
-                            {item.value}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* WhatsApp */}
-                <a
-                  href="https://wa.me/254757356989"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 bg-[#25D366] hover:bg-[#1ebe5d] text-white rounded-2xl px-5 py-4 font-semibold transition-colors"
-                >
-                  <MessageCircle className="h-5 w-5 flex-shrink-0" />
-                  <span className="flex-1">Chat on WhatsApp — we respond fast!</span>
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-
-                {/* Social media */}
-                <div className="bg-card border border-border rounded-2xl px-5 py-4">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                    Follow Us
-                  </p>
-                  <div className="flex gap-3">
-                    <a
-                      href="https://www.facebook.com/XploreImports"
-                      target="_blank" rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center transition-colors"
-                      aria-label="Facebook"
-                    >
-                      <Facebook className="h-4 w-4" />
-                    </a>
-                    <a
-                      href="https://www.instagram.com/xplorecar_imports/"
-                      target="_blank" rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white flex items-center justify-center transition-colors"
-                      aria-label="Instagram"
-                    >
-                      <Instagram className="h-4 w-4" />
-                    </a>
-                    <a
-                      href="https://www.tiktok.com/@explore_254k3"
-                      target="_blank" rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-xl bg-black hover:bg-zinc-800 text-white flex items-center justify-center transition-colors"
-                      aria-label="TikTok"
-                    >
-                      <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                      </svg>
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </section>
-
-        {/* ── Enquiry Form ── */}
-        <section className="py-16 bg-secondary/40 dark:bg-muted/20">
-          <div className="container mx-auto px-4 max-w-2xl">
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="text-center mb-10"
-            >
-              <p className="text-xs font-semibold text-primary uppercase tracking-widest mb-3">
-                Get In Touch
-              </p>
-              <h2 className="font-display text-3xl font-bold text-foreground mb-2">
-                Send Us a Message
-              </h2>
-              <p className="text-muted-foreground text-sm">
-                Tell us what car you're looking for and we'll get back to you shortly.
-              </p>
-            </motion.div>
-            <motion.div
-              variants={fadeUp}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="bg-card border border-border rounded-2xl p-8"
-            >
-              <EnquiryForm />
+              </div>
             </motion.div>
           </div>
         </section>
-
-        {/* ── Gallery ── */}
-
-        {/* ── Map ── */}
-        <section className="pb-20">
-          <div className="container mx-auto px-4 max-w-6xl">
-            <div className="rounded-3xl overflow-hidden border border-border shadow-sm" style={{ height: "360px" }}>
-              <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d255282.35846418597!2d36.70730744863279!3d-1.3028617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f1172d84d49a7%3A0xf7cf0254b297924c!2sNairobi%2C%20Kenya!5e0!3m2!1sen!2sus!4v1234567890123!5m2!1sen!2sus"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                title="Xplore Cars Location"
-              />
-            </div>
-          </div>
-        </section>
-
       </main>
 
       <Footer />

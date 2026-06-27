@@ -2,14 +2,14 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { HashLink } from "react-router-hash-link";
 import { Menu, X, ArrowRight, MessageCircle } from "lucide-react";
-import ThemeToggle from "@/components/ThemeToggle";
 
-const navLinks = [
+const navLinks: { name: string; path: string; hash?: string }[] = [
   { name: "Home", path: "/" },
-  { name: "Car Options", path: "/car-options" },
-  { name: "Blogs", path: "/blog" },
-  { name: "Testimonials", path: "/#testimonials", hash: true },
   { name: "About Us", path: "/about" },
+  { name: "Our Imports", path: "/car-options" },
+  { name: "Testimonials", path: "/testimonials"},
+  { name: "Blogs", path: "/blog" },
+  { name: "Contact", path: "/contact"},
 ];
 
 const Navbar = () => {
@@ -32,8 +32,7 @@ const Navbar = () => {
       {/* ── Navbar bar ── */}
       <nav className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border">
         <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-
+          <div className="grid grid-cols-[auto_1fr_auto] items-center h-20">
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-3 group" onClick={() => setIsOpen(false)}>
               <div className="rounded-lg overflow-hidden">
@@ -45,56 +44,35 @@ const Navbar = () => {
               </div>
               <div className="flex flex-col leading-tight">
                 <span className="font-display font-bold text-lg text-foreground">Xplore Car Imports</span>
-                <span className="text-xs text-muted-foreground font-body">Import from Japan with ease</span>
+                <span className="text-xs text-muted-foreground font-body">Low Mileage. High-Grade Cars.</span>
               </div>
             </Link>
 
             {/* Desktop nav */}
-            <div className="hidden md:flex items-center space-x-1">
-              {navLinks.map((link) =>
-                link.hash ? (
-                  <HashLink
-                    key={link.path}
-                    smooth
-                    to={link.path}
-                    className={`px-4 py-2 rounded-md text-sm font-body font-medium transition-colors ${
-                      isActive(link.path) ? "text-accent" : "text-foreground hover:text-accent"
-                    }`}
-                  >
-                    {link.name}
-                  </HashLink>
-                ) : (
+            <div className="hidden md:flex items-center justify-center space-x-1">
+              {navLinks.map((link) =>(
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`px-4 py-2 rounded-md text-sm font-body font-medium transition-colors ${
-                      isActive(link.path) ? "text-accent" : "text-foreground hover:text-accent"
+                    className={`relative px-4 py-2 rounded-md text-sm font-body font-medium transition-colors after:absolute after:left-4 after:-bottom-0.5 after:h-[2px] after:bg-accent after:transition-all after:duration-300 ${
+                      isActive(link.path)
+                        ? "text-accent after:w-[calc(100%-2rem)]"
+                        : "text-foreground hover:text-accent after:w-0 hover:after:w-[calc(100%-2rem)]"
                     }`}
                   >
                     {link.name}
                   </Link>
                 )
               )}
-              <div className="flex items-center gap-3 ml-4">
-                <ThemeToggle />
-                <Link
-                  to="/car-options"
-                  className="bg-foreground text-background px-5 py-2 rounded-lg text-sm font-body font-medium hover:bg-accent hover:text-accent-foreground transition-colors gold-shimmer"
-                >
-                  Get Started
-                </Link>
-              </div>
             </div>
 
             {/* Mobile controls */}
-            <div className="md:hidden flex items-center gap-3">
-              <ThemeToggle />
+            <div className="md:hidden flex items-center gap-3 justify-self-end">
               <button
                 className="relative z-[110] p-2 rounded-md hover:bg-secondary transition-colors"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
               >
-                {/* Animated hamburger → X */}
                 <span
                   className="block w-5 h-0.5 bg-foreground transition-all duration-300 origin-center"
                   style={{
@@ -170,7 +148,7 @@ const Navbar = () => {
                   {link.hash ? (
                     <HashLink
                       smooth
-                      to={link.path}
+                      to={link.path + (link.hash ?? "")}
                       onClick={() => setIsOpen(false)}
                       className={`flex items-center justify-between px-4 py-3.5 rounded-xl text-sm font-semibold transition-colors group ${
                         isActive(link.path)
@@ -219,7 +197,7 @@ const Navbar = () => {
                 {/* Fake chat bubble */}
                 <div className="bg-white dark:bg-zinc-800 rounded-xl rounded-tl-sm px-4 py-3 shadow-sm mb-4">
                   <p className="text-xs font-medium text-zinc-800 dark:text-zinc-100 leading-snug">
-                    👋 Tell us what car you need and we'll source it from Japan for you!
+                    Tell us what car you need and we'll source it from Japan for you!
                   </p>
                   <p className="text-[10px] text-zinc-400 text-right mt-1.5">now</p>
                 </div>
@@ -237,29 +215,6 @@ const Navbar = () => {
               </div>
             </div>
           </nav>
-
-          {/* Panel footer — Get Started CTA */}
-          <div
-            className="px-6 py-5 border-t border-border"
-            style={{
-              transitionDelay: isOpen ? "350ms" : "0ms",
-              transform: isOpen ? "translateY(0)" : "translateY(12px)",
-              opacity: isOpen ? 1 : 0,
-              transition: "transform 0.4s ease, opacity 0.4s ease",
-            }}
-          >
-            <Link
-              to="/car-options"
-              onClick={() => setIsOpen(false)}
-              className="flex items-center justify-center gap-2 w-full bg-foreground text-background py-3.5 rounded-xl text-sm font-bold hover:bg-accent hover:text-accent-foreground transition-colors"
-            >
-              Get Started Today
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-            <p className="text-center text-[10px] text-muted-foreground mt-3">
-              Government Registered · Nairobi, Kenya
-            </p>
-          </div>
         </div>
       </div>
     </>
