@@ -38,11 +38,6 @@ const About = () => {
                 <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
                   What makes our imports stand out?
                 </h2>
-                <p className="text-muted-foreground leading-relaxed text-sm md:text-base max-w-2xl">
-                  Xplore is not your regular car importer! We pride ourselves in quality cars that give you peace of mind for many years.
-                  We specialize in sourcing high-grade cars with low mileage below 50,000 km. We conduct thorough due diligence to ensure all our cars
-                  have no accident history, hailstone damage, open manufacturer recalls, or multiple past owners.
-                </p>
                 <div className="space-y-4 pt-2">
                   {[
                     {
