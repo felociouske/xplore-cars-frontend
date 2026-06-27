@@ -2,7 +2,7 @@ import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaTiktok } from "react-
 
 const SOCIAL_LINKS = [
   { name: "YouTube", href: "https://www.youtube.com/@Explore254Discover", icon: FaYoutube, bg: "#FF0000" },
-  { name: "TikTok", href: "https://www.tiktok.com/@explore_254k3", icon: FaTiktok, bg: "#010101" },
+  { name: "TikTok", href: "https://www.tiktok.com/@xploreimports_ke?_r=1&_t=ZS-97YgYKxFhbw", icon: FaTiktok, bg: "#010101" },
 ];
 
 const Footer = () => (
