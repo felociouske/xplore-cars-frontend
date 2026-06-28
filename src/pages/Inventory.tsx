@@ -159,14 +159,14 @@ function Inventory() {
                 </div>
 
                 {/* Info */}
-                <div className="p-5">
+                <div className="p-5 text-center">
+
                   <h3 className="font-display text-base font-semibold text-primary mb-1 group-hover:text-accent transition-colors leading-snug">
                     {car.name || `${car.make || ""} ${car.model || ""}`.trim() || "Imported Vehicle"}
                   </h3>
-                  <p className="font-sans text-sm text-muted-foreground mb-3">
-                    {[car.body_type && BODY_TYPES[car.body_type], car.drive_side?.toUpperCase()]
-                      .filter(Boolean).join(" · ") || "Japan Import"}
-                  </p>
+                  <span className="inline-flex items-center justify-center rounded-md bg-[#1B8F5A] px-6 py-3 mb-3 mt-3 text-sm font-semibold text-white hover:bg-[#157a4b] transition-colors">
+                    View Details →
+                  </span>
 
                   <div className="flex items-center justify-between pt-3 border-t border-border">
                     {priceDisplay ? (
@@ -177,9 +177,6 @@ function Inventory() {
                     ) : (
                       <span />
                     )}
-                    <span className="inline-flex items-center justify-center rounded-md bg-[#1B8F5A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#157a4b] transition-colors">
-                      View Details →
-                    </span>
                   </div>
                 </div>
               </Link>

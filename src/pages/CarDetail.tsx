@@ -129,7 +129,7 @@ const CarDetail = () => {
             Back to Imports
           </Link>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+          <div className="flex flex-col gap-5">
             {/* Left: Images */}
             <div className="lg:col-span-2">
               {images.length > 0 && (
