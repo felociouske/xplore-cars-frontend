@@ -13,8 +13,8 @@ interface CarItem {
   name?: string;
   make?: string;
   model?: string;
-  price_from: number;
-  price_display: string;
+  price_from?: number | string | null;
+  price_display?: string | null;
   images?: CarImage[];
   body_type?: string;
   import_type?: string;
@@ -32,6 +32,14 @@ const SECTIONS: Record<string, string> = {
   available_to_import: "Available to Import",
   successful_import: "Successful Import",
   popular_import: "Popular Import",
+};
+
+const getPriceDisplay = (car: CarItem): string | null => {
+  if (car.price_display?.trim()) return car.price_display;
+  if (car.price_from === null || car.price_from === undefined || car.price_from === "") return null;
+
+  const price = Number(car.price_from);
+  return Number.isFinite(price) ? `KES ${price.toLocaleString()}` : null;
 };
 
 function Inventory() {
@@ -87,7 +95,7 @@ function Inventory() {
             Cars We Have Imported
           </h1>
           <p className="font-sans text-muted-foreground leading-relaxed">
-            View the high quality cars we have managed to import from Japan.
+            Take a look at the premium-quality cars we have successfully imported for our happy clients. Will yours be next?
           </p>
         </div>
 
@@ -124,7 +132,10 @@ function Inventory() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
-            {filteredCars.map((car) => (
+            {filteredCars.map((car) => {
+              const priceDisplay = getPriceDisplay(car);
+
+              return (
               <Link
                 key={car.id}
                 to={`/car-options/${car.id}`}
@@ -158,19 +169,22 @@ function Inventory() {
                   </p>
 
                   <div className="flex items-center justify-between pt-3 border-t border-border">
-                    <div>
-                      <p className="text-[10px] font-sans text-muted-foreground uppercase tracking-wider">Imported value</p>
-                      <p className="price-tag">
-                        KES {Number(car.price_from).toLocaleString()}
-                      </p>
-                    </div>
+                    {priceDisplay ? (
+                      <div>
+                        <p className="text-[10px] font-sans text-muted-foreground uppercase tracking-wider">Imported value</p>
+                        <p className="price-tag">{priceDisplay}</p>
+                      </div>
+                    ) : (
+                      <span />
+                    )}
                     <span className="inline-flex items-center justify-center rounded-md bg-[#1B8F5A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#157a4b] transition-colors">
                       View Details →
                     </span>
                   </div>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         )}
       </main>

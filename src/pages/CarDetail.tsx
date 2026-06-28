@@ -18,13 +18,17 @@ interface CarData {
   description?: string;
   features_list?: string[];
   images?: any[];
-  price_display?: string;
+  price_display?: string | null;
 }
 
 function getImageSrc(img: any): string {
   const src = typeof img === "string" ? img : img?.image;
   if (!src) return "/placeholder-car.jpg";
   return src.startsWith("http") ? src : `${API_BASE_URL.replace("/api", "")}${src}`;
+}
+
+function getPriceDisplay(car: CarData): string | null {
+  return car.price_display?.trim() || null;
 }
 
 const CarDetail = () => {
@@ -88,6 +92,7 @@ const CarDetail = () => {
 
   const suggestedCars = allCars.filter((car) => car.id !== carData.id).slice(0, 4);
   const carTitle = carData.name || `${carData.make || ""} ${carData.model || ""}`.trim();
+  const priceDisplay = getPriceDisplay(carData);
 
   const handleWhatsApp = () => {
     const msg = encodeURIComponent(`Hi, I'm interested in the ${carTitle}. Could you please send me more details?`);
@@ -169,7 +174,7 @@ const CarDetail = () => {
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{carTitle}</h1>
                 {carData.year && <p className="text-lg text-gray-700">Year: {carData.year}</p>}
-                {carData.price_display && <p className="text-2xl font-semibold text-gray-900 mt-2">{carData.price_display}</p>}
+                {priceDisplay && <p className="text-2xl font-semibold text-gray-900 mt-2">{priceDisplay}</p>}
               </div>
             </div>
           </div>
@@ -228,7 +233,7 @@ const CarDetail = () => {
                         />
                       </div>
                       <h3 className="font-semibold text-gray-900 group-hover:text-[#1B8F5A] transition">{carName}</h3>
-                      {car.price_display && <p className="text-sm text-gray-600 mt-1">{car.price_display}</p>}
+                      {getPriceDisplay(car) && <p className="text-sm text-gray-600 mt-1">{getPriceDisplay(car)}</p>}
                     </Link>
                   );
                 })}
