@@ -19,6 +19,10 @@ interface CarData {
   features_list?: string[];
   images?: any[];
   price_display?: string | null;
+  youtube_video_1?: string | null;
+  youtube_video_1_title?: string | null;
+  youtube_video_2?: string | null;
+  youtube_video_2_title?: string | null;
 }
 
 function getImageSrc(img: any): string {
@@ -117,6 +121,22 @@ const CarDetail = () => {
     setSelectedImage(images[nextIndex]);
   };
 
+  function getYouTubeEmbedUrl(url: string): string | null {
+    try {
+      const u = new URL(url);
+      let videoId: string | null = null;
+      if (u.hostname.includes("youtu.be")) {
+        videoId = u.pathname.slice(1);
+      } else if (u.hostname.includes("youtube.com")) {
+        videoId = u.searchParams.get("v");
+      }
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : null;
+    } catch {
+      return null;
+    }
+  }
+
+
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
@@ -170,7 +190,7 @@ const CarDetail = () => {
             </div>
 
             {/* Right: Summary & Contact */}
-            <div className="space-y-8">
+            <div className="space-y-4">
               <div>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{carTitle}</h1>
                 {carData.year && <p className="text-lg text-gray-700">Year: {carData.year}</p>}
@@ -179,24 +199,9 @@ const CarDetail = () => {
             </div>
           </div>
 
-          {/* Features Section */}
-          {carData.features_list && carData.features_list.length > 0 && (
-            <section className="mt-16 pt-8 border-t border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Features</h2>
-              <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {carData.features_list.map((feature, idx) => (
-                  <li key={idx} className="flex items-start gap-3">
-                    <span className="text-[#1B8F5A] font-bold mt-1">•</span>
-                    <span className="text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )}
-
           {/* Description Section */}
           {carData.description && (
-            <section className="mt-12 pt-8 border-t border-gray-200">
+            <section className="mt-6 border-t border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">The story behind this car</h2>
               <div
                 className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
@@ -293,6 +298,47 @@ const CarDetail = () => {
           </p>
         </div>
       )}
+
+      {/* YouTube Videos Section */}
+      {(carData.youtube_video_1 || carData.youtube_video_2) && (() => {
+        const videos = [
+          { url: carData.youtube_video_1, title: carData.youtube_video_1_title },
+          { url: carData.youtube_video_2, title: carData.youtube_video_2_title },
+        ].filter(v => v.url && getYouTubeEmbedUrl(v.url!));
+
+        if (videos.length === 0) return null;
+
+        return (
+          <section className="mt-16 pt-8 border-t border-gray-200">
+            <div className="max-w-5xl mx-auto px-4 pb-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Watch the full car review on YouTube
+              </h2>
+              <div className={`grid gap-8 ${videos.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-2xl"}`}>
+                {videos.map((video, idx) => {
+                  const embedUrl = getYouTubeEmbedUrl(video.url!);
+                  return (
+                    <div key={idx} className="space-y-3">
+                      {video.title && (
+                        <h3 className="text-base font-semibold text-gray-800">{video.title}</h3>
+                      )}
+                      <div className="rounded overflow-hidden shadow-sm border border-gray-100">
+                        <iframe
+                          src={embedUrl!}
+                          title={video.title || `${carTitle} video ${idx + 1}`}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                          allowFullScreen
+                          className="w-full aspect-video"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       <Footer />
     </div>

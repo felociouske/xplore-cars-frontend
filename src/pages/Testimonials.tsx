@@ -185,12 +185,6 @@ const VideoCard = ({ item, index }: { item: Testimonial; index: number }) => {
   );
 };
 
-const FILTER_OPTIONS = [
-  { value: "all", label: "All Reviews" },
-  { value: "text", label: "Written" },
-  { value: "both", label: "With Video" },
-];
-
 const TestimonialsPage = () => {
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [loading, setLoading] = useState(true);
@@ -244,22 +238,6 @@ const TestimonialsPage = () => {
 
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3 mb-10 items-center justify-between">
-          <div className="flex gap-2 bg-secondary p-1 rounded-xl">
-            {FILTER_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setFilter(opt.value as typeof filter)}
-                className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
-                  filter === opt.value
-                    ? "bg-card text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
           <div className="relative w-full sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <input
