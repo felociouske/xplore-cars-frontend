@@ -217,6 +217,46 @@ const CarDetail = () => {
             </section>
           )}
 
+          {/* YouTube Videos Section */}
+          {(carData.youtube_video_1 || carData.youtube_video_2) && (() => {
+            const videos = [
+              { url: carData.youtube_video_1, title: carData.youtube_video_1_title },
+              { url: carData.youtube_video_2, title: carData.youtube_video_2_title },
+            ].filter(v => v.url && getYouTubeEmbedUrl(v.url!));
+
+            if (videos.length === 0) return null;
+
+            return (
+              <section className="border-t border-gray-200">
+                <div className="max-w-5xl mx-auto px-4 pb-16">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                    Watch the full car review on YouTube
+                  </h2>
+                  <div className={`grid gap-8 ${videos.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-2xl"}`}>
+                    {videos.map((video, idx) => {
+                      const embedUrl = getYouTubeEmbedUrl(video.url!);
+                      return (
+                        <div key={idx} className="space-y-3">
+                          {video.title && (
+                            <h3 className="text-base font-semibold text-gray-800">{video.title}</h3>
+                          )}
+                          <div className="rounded overflow-hidden shadow-sm border border-gray-100">
+                            <iframe
+                              src={embedUrl!}
+                              title={video.title || `${carTitle} video ${idx + 1}`}
+                              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                              allowFullScreen
+                              className="w-full aspect-video"
+                            />
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </section>
+            );
+          })()}
           {/* Suggested Cars Section */}
           {suggestedCars.length > 0 && (
             <section className="mt-16 pt-8 border-t border-gray-200">
@@ -298,48 +338,6 @@ const CarDetail = () => {
           </p>
         </div>
       )}
-
-      {/* YouTube Videos Section */}
-      {(carData.youtube_video_1 || carData.youtube_video_2) && (() => {
-        const videos = [
-          { url: carData.youtube_video_1, title: carData.youtube_video_1_title },
-          { url: carData.youtube_video_2, title: carData.youtube_video_2_title },
-        ].filter(v => v.url && getYouTubeEmbedUrl(v.url!));
-
-        if (videos.length === 0) return null;
-
-        return (
-          <section className="mt-16 pt-8 border-t border-gray-200">
-            <div className="max-w-5xl mx-auto px-4 pb-16">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Watch the full car review on YouTube
-              </h2>
-              <div className={`grid gap-8 ${videos.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-2xl"}`}>
-                {videos.map((video, idx) => {
-                  const embedUrl = getYouTubeEmbedUrl(video.url!);
-                  return (
-                    <div key={idx} className="space-y-3">
-                      {video.title && (
-                        <h3 className="text-base font-semibold text-gray-800">{video.title}</h3>
-                      )}
-                      <div className="rounded overflow-hidden shadow-sm border border-gray-100">
-                        <iframe
-                          src={embedUrl!}
-                          title={video.title || `${carTitle} video ${idx + 1}`}
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          className="w-full aspect-video"
-                        />
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </section>
-        );
-      })()}
-
       <Footer />
     </div>
   );
