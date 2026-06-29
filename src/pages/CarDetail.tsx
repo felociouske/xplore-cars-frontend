@@ -227,9 +227,9 @@ const CarDetail = () => {
             if (videos.length === 0) return null;
 
             return (
-              <section className="border-t border-gray-200">
+              <section className="mt-5 pt-5 border-t border-gray-200">
                 <div className="max-w-5xl mx-auto px-4 pb-16">
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-900 mb-5">
                     Watch the full car review on YouTube
                   </h2>
                   <div className={`grid gap-8 ${videos.length > 1 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-2xl"}`}>
