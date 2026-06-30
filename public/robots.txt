@@ -13,4 +13,4 @@ Allow: /
 User-agent: *
 Allow: /
 
-Sitemap: https://xplorecars.cc/sitemap.xml
+Sitemap: https://xplorecarimports.cc/sitemap.xml
