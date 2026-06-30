@@ -12,7 +12,6 @@ import CarDetail from "./pages/CarDetail";
 import About from "./pages/About";
 import NotFound from "./pages/NotFound";
 import Contact from "./pages/Contact";
-import TestimonialsPage from "./pages/Testimonials";
 import ScrollToTop from "./components/ScrollToTop";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 
@@ -35,7 +34,6 @@ const App = () => {
             <Route path="/car-options/:id" element={<CarDetail />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
-            <Route path="/testimonials" element={<TestimonialsPage />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <WhatsAppFloat />

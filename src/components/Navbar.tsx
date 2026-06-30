@@ -6,8 +6,7 @@ import { Menu, X, ArrowRight, MessageCircle } from "lucide-react";
 const navLinks: { name: string; path: string; hash?: string }[] = [
   { name: "Home", path: "/" },
   { name: "About Us", path: "/about" },
-  { name: "Our Imports", path: "/car-options" },
-  { name: "Testimonials", path: "/testimonials"},
+  { name: "Our Imports & Car Story", path: "/car-options" },
   { name: "Blogs", path: "/blog" },
   { name: "Contact", path: "/contact"},
 ];
