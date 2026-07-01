@@ -30,12 +30,12 @@ const BlogCard = ({ post, featured = false }: { post: BlogPost; featured?: boole
     return (
       <article className="card-clean rounded overflow-hidden group md:grid md:grid-cols-2">
         {/* Image */}
-        <Link to={`/blog/${post.slug}`} className="block overflow-hidden h-64 md:h-full">
+        <Link to={`/blog/${post.slug}`} className="block overflow-hidden aspect-video md:aspect-auto md:h-full bg-secondary">
           {post.cover_image_url ? (
             <img
               src={post.cover_image_url}
               alt={post.title}
-              className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-500"
+              className="w-full h-full object-cover object-center group-hover:scale-103 transition-transform duration-500"
             />
           ) : (
             <div className="w-full h-full bg-secondary flex items-center justify-center">
