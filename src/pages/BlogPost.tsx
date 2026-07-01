@@ -119,8 +119,12 @@ const BlogPost = () => {
 
       {/* Cover image */}
       {post.cover_image_url && (
-        <div className="w-3/4 h-full md:h-80 overflow-hidden mt-16 items-center mx-auto rounded-lg shadow-lg">
-          <img src={post.cover_image_url} alt={post.title} className="w-full h-full object-cover" />
+        <div className="w-full md:w-3/4 aspect-video overflow-hidden mt-16 mx-auto rounded-lg shadow-lg">
+          <img
+            src={post.cover_image_url}
+            alt={post.title}
+            className="w-full h-full object-cover object-center"
+          />
         </div>
       )}
 
@@ -170,7 +174,7 @@ const BlogPost = () => {
                     ALLOWED_TAGS: ['p','br','strong','b','em','i','u','h1','h2','h3','h4','h5','h6',
                                    'blockquote','ol','ul','li','a','img','table','thead','tbody','tr','th','td',
                                    'code','pre','hr','span','div','figure','figcaption'],
-                    ALLOWED_ATTR: ['href','target','rel','src','alt','class','style','title','width','height'],
+                    ALLOWED_ATTR: ['href','target','rel','src','alt','class','title','width','height'],
                   }),
                 }}
               />
