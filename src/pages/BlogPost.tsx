@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import { Calendar, User, ArrowLeft, ArrowRight, Play } from "lucide-react";
+import { Calendar, User, ArrowLeft, ArrowRight, Play, MessageCircle} from "lucide-react";
 import DOMPurify from "dompurify";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
@@ -218,13 +218,15 @@ const BlogPost = () => {
                 <p className="text-blue-100 mb-6">
                   Talk to our team and we'll guide you through the full process.
                 </p>
-                <Link
-                  to="/car-options"
-                  className="inline-flex items-center gap-2 bg-white text-blue-900 font-bold py-3 px-6 rounded hover:bg-gray-100 transition"
+                <a
+                  href="https://wa.me/254757356989"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 rounded-md bg-[#1B8F5A] px-6 py-3 text-sm font-semibold text-white hover:bg-[#157a4b] transition-colors"
                 >
-                  Browse Available Cars
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
+                  <MessageCircle className="h-4 w-4" />
+                  Chat on WhatsApp
+                </a>
               </div>
             </div>
           </div>
