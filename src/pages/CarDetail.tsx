@@ -204,7 +204,7 @@ const CarDetail = () => {
             <section className="mt-6 border-t border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">The story behind this car</h2>
               <div
-                className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(carData.description, {
                     ALLOWED_TAGS: ["p", "br", "strong", "b", "em", "i", "u", "h1", "h2", "h3", "h4", "h5", "h6",

@@ -157,7 +157,7 @@ const BlogPost = () => {
               </div>
 
               {post.meta_description && (
-                <p className="text-xl text-gray-700 leading-relaxed mb-8 font-semibold">
+                <p className="text-xl text-gray-700 leading-relaxed mb-8">
                   {post.meta_description}
                 </p>
               )}
