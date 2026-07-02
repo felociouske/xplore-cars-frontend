@@ -35,7 +35,7 @@ const About = () => {
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] items-start">
               <div className="space-y-6">
-                <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+                <h2 className="font-display text-4xl md:text-4xl font-semibold text-foreground leading-tight">
                   What makes our imports stand out?
                 </h2>
                 <div className="space-y-4 pt-2">
@@ -58,8 +58,8 @@ const About = () => {
                     },
                   ].map((item) => (
                     <div key={item.title} className="space-y-1">
-                      <h3 className="text-sm font-semibold text-foreground">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{item.body}</p>
+                      <h3 className="font-semibold text-2xl text-foreground">{item.title}</h3>
+                      <p className="text-foreground leading-relaxed">{item.body}</p>
                     </div>
                   ))}
                 </div>
@@ -164,7 +164,7 @@ const About = () => {
         <section className="py-16 border-b border-border">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="mb-12 max-w-3xl">
-              <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
+              <h2 className="font-display text-4xl md:text-4xl font-semibold text-foreground leading-tight">
                 Core values we value most
               </h2>
             </div>
@@ -177,10 +177,10 @@ const About = () => {
                 viewport={{ once: true }}
                 className="vintage-card p-8"
               >
-                <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                <h3 className="font-display text-3xl font-semibold text-foreground mb-4">
                   Honesty
                 </h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">
+                <p className="text-foreground leading-relaxed">
                   We source cars from verified auctions in Japan, inspect them, and give you full
                   pricing details before you commit.
                 </p>
@@ -193,7 +193,7 @@ const About = () => {
                 viewport={{ once: true }}
                 className="vintage-card p-8"
               >
-                <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                <h3 className="font-display text-3xl font-semibold text-foreground mb-4">
                   Communication
                 </h3>
                 <p>
@@ -208,10 +208,10 @@ const About = () => {
                 viewport={{ once: true }}
                 className="vintage-card p-8"
               >
-                <h3 className="font-display text-xl font-semibold text-foreground mb-4">
+                <h3 className="font-display text-3xl font-semibold text-foreground mb-4">
                   Trust
                 </h3>
-                <p className="text-muted-foreground leading-relaxed text-sm">
+                <p className="text-foreground leading-relaxed">
                   Customers return because we treat every order like a handshake: clear, honest and
                   backed by experience.
                 </p>
@@ -227,8 +227,8 @@ const About = () => {
                 <h2 className="font-display text-3xl md:text-4xl font-semibold text-foreground leading-tight">
                   How we import your car, step by step.
                 </h2>
-                <p className="mt-5 text-muted-foreground leading-relaxed max-w-xl mb-5">
-                  A straightforward process built around you — from the first conversation to the moment your car pulls up at your door.
+                <p className="mt-5 text-foreground text-xl leading-relaxed max-w-xl mb-5">
+                  A straightforward process built around you from the first conversation to the moment your car pulls up at your door.
                 </p>
               </div>
 
@@ -245,8 +245,8 @@ const About = () => {
                     <span className="h-full w-px bg-border" />
                   </div>
                   <div className="vintage-panel p-8">
-                    <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 1</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 1</p>
+                    <p className="text-foreground text-xl leading-relaxed">
                       Contact us and tell us exactly what you're looking for. We discuss every detail make, model, budget, and preferences, and answer all your questions before you commit to anything.
                     </p>
                   </div>
@@ -265,7 +265,7 @@ const About = () => {
                   </div>
                   <div className="vintage-panel p-8">
                     <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 2</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="text-foreground text-xl leading-relaxed">
                       Once you're ready to proceed, you pay a security deposit. This kickstarts the search, we begin bidding at auction or browsing trusted Japanese dealers on your behalf.
                     </p>
                   </div>
@@ -284,7 +284,7 @@ const About = () => {
                   </div>
                   <div className="vintage-panel p-8">
                     <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 3</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="text-foreground text-xl leading-relaxed">
                       We present you with the best available option. You review it, ask any questions, and only when you're happy do we bid and secure the car with our professional guidance throughout.
                     </p>
                   </div>
@@ -303,7 +303,7 @@ const About = () => {
                   </div>
                   <div className="vintage-panel p-8">
                     <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 4</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="text-foreground text-xl leading-relaxed">
                       Pay the remaining balance (full invoice value minus your deposit) and we ship your car immediately. No delays, no surprises.
                     </p>
                   </div>
@@ -322,7 +322,7 @@ const About = () => {
                   </div>
                   <div className="vintage-panel p-8">
                     <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 5</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="text-foreground text-xl leading-relaxed">
                       We keep you updated as your car makes its journey to Mombasa port. You'll always know where it is and when to expect it.
                     </p>
                   </div>
@@ -341,7 +341,7 @@ const About = () => {
                   </div>
                   <div className="vintage-panel p-8">
                     <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 6</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="text-foreground text-xl leading-relaxed">
                       We handle customs clearance at Mombasa and arrange doorstep delivery straight to you wherever you are in Kenya.
                     </p>
                   </div>
@@ -359,7 +359,7 @@ const About = () => {
                   </div>
                   <div className="vintage-panel p-8">
                     <p className="text-sm uppercase tracking-[0.26em] text-foreground/60 mb-3">Step 7</p>
-                    <p className="text-muted-foreground leading-relaxed text-sm">
+                    <p className="text-foreground text-xl leading-relaxed">
                       We'd love to hear how it went. Share your feedback and, if you're happy, a car review video with us. Your experience helps the next buyer trust the process just as you did.
                     </p>
                   </div>

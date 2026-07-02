@@ -168,12 +168,12 @@ const BlogPost = () => {
 
               {/* Article content */}
               <div
-                className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                className="prose prose-lg max-w-none text-gray-700 leading-relaxed prose-headings:mt-6 prose-headings:mb-3 prose-p:my-3"
                 dangerouslySetInnerHTML={{
                   __html: DOMPurify.sanitize(post.content, {
                     ALLOWED_TAGS: ['p','br','strong','b','em','i','u','h1','h2','h3','h4','h5','h6',
-                                   'blockquote','ol','ul','li','a','img','table','thead','tbody','tr','th','td',
-                                   'code','pre','hr','span','div','figure','figcaption'],
+                                  'blockquote','ol','ul','li','a','img','table','thead','tbody','tr','th','td',
+                                  'code','pre','hr','span','div','figure','figcaption'],
                     ALLOWED_ATTR: ['href','target','rel','src','alt','class','title','width','height'],
                   }),
                 }}
