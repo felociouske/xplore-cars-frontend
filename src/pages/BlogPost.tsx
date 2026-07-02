@@ -145,7 +145,7 @@ const BlogPost = () => {
           <div className="grid grid-cols-1 gap-8">
             <div>
               {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+              <h1 className="text-xl md:text-3xl font-bold text-gray-900 leading-tight mb-4">
                 {post.title}
               </h1>
               {/* Meta bar */}
