@@ -30,14 +30,6 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- Testimonials -->
-  <url>
-    <loc>https://xplorecarimports.co.ke/testimonials</loc>
-    <lastmod>2026-06-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-
   <!-- About -->
   <url>
     <loc>https://xplorecarimports.co.ke/about</loc>

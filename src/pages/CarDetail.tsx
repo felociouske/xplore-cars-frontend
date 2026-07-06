@@ -92,7 +92,19 @@ const CarDetail = () => {
     );
   }
 
-  if (!carData) return <Navigate to="/car-options" replace />;
+  // After — no client-side URL change, just an inline empty/error state
+  if (!loading && !carData) {
+    return (
+      <div className="h-screen flex items-center justify-center">
+        <div className="text-center space-y-3">
+          <p className="text-muted-foreground">This car couldn't be found.</p>
+          <Link to="/car-options" className="text-primary underline">
+            Browse inventory
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const suggestedCars = allCars.filter((car) => car.id !== carData.id).slice(0, 4);
   const carTitle = carData.name || `${carData.make || ""} ${carData.model || ""}`.trim();
