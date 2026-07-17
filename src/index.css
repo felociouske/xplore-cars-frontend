@@ -222,3 +222,74 @@
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-hover { box-shadow: var(--shadow-hover); }
 }
+
+
+/* Add this to your global stylesheet (e.g. index.css) so it applies
+   wherever blog content is rendered. These class names match what
+   CKEditor5's image plugin actually writes into the HTML — without
+   this CSS, the classes exist in the markup but do nothing. */
+
+/* Default / centered block image */
+.image {
+  display: table;
+  margin: 1.25rem auto;
+  max-width: 100%;
+  clear: both;
+}
+.image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+}
+.image figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  font-size: 0.85rem;
+  color: #6b7280;
+  text-align: center;
+  padding-top: 0.5rem;
+}
+
+/* Left / right floated images (text wraps around them) */
+.image-style-align-left {
+  float: left;
+  margin: 0.25rem 1.5rem 1rem 0;
+  max-width: 50%;
+}
+.image-style-align-right {
+  float: right;
+  margin: 0.25rem 0 1rem 1.5rem;
+  max-width: 50%;
+}
+
+/* "Side" style — CKEditor's dedicated side-image style, same idea as align-right */
+.image-style-side {
+  float: right;
+  margin: 0.25rem 0 1rem 1.5rem;
+  max-width: 50%;
+}
+
+/* Full width */
+.image-style-full {
+  display: block;
+  width: 100%;
+  margin: 1.5rem 0;
+}
+
+/* Resized images (user dragged the resize handle — width comes from inline style,
+   this just makes sure it doesn't get overridden by prose defaults) */
+.image_resized {
+  display: table;
+}
+.image_resized img {
+  width: 100%;
+  height: auto;
+}
+
+/* Clearfix so floated images don't break out of the article container */
+.prose::after {
+  content: "";
+  display: table;
+  clear: both;
+}

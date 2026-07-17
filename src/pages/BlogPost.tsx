@@ -62,6 +62,28 @@ function getYouTubeEmbedUrl(url?: string) {
   }
 }
 
+// CKEditor5's image plugin writes inline `style` (width, sometimes float)
+// plus classes like `image-style-side`, `image-style-align-left`,
+// `image_resized` onto <figure>/<img> tags to control per-image position.
+// This sanitizer config must allow `style` or all that positioning is
+// silently stripped and every image collapses to default block layout.
+const SANITIZE_CONFIG = {
+  ALLOWED_TAGS: [
+    'p','br','strong','b','em','i','u','h1','h2','h3','h4','h5','h6',
+    'blockquote','ol','ul','li','a','img','table','thead','tbody','tr','th','td',
+    'code','pre','hr','span','div','figure','figcaption',
+  ],
+  ALLOWED_ATTR: [
+    'href','target','rel','src','alt','class','title','width','height','style',
+  ],
+  // Restrict style to safe, expected CSS properties only — don't allow
+  // arbitrary CSS (e.g. position:fixed, expression(), url() javascript).
+  ALLOWED_CSS_PROPERTIES: [
+    'width', 'height', 'max-width', 'float', 'margin', 'margin-left',
+    'margin-right', 'margin-top', 'margin-bottom', 'text-align', 'display',
+  ],
+};
+
 const BlogPost = () => {
   const { slug } = useParams<{ slug: string }>();
   const [post, setPost] = useState<BlogPost | null>(null);
@@ -131,7 +153,7 @@ const BlogPost = () => {
       {!post.cover_image_url && <div className="h-16" />}
 
       <main className="flex-1">
-        <div className="mx-auto px-6 py-12 max-w-full">
+        <div className="mx-auto px-4 py-12 max-w-5xl">
 
           {/* Back link */}
           <Link
@@ -170,12 +192,7 @@ const BlogPost = () => {
               <div
                 className="prose prose-lg max-w-none text-gray-700 leading-relaxed prose-headings:mt-6 prose-headings:mb-3 prose-p:my-3"
                 dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(post.content, {
-                    ALLOWED_TAGS: ['p','br','strong','b','em','i','u','h1','h2','h3','h4','h5','h6',
-                                  'blockquote','ol','ul','li','a','img','table','thead','tbody','tr','th','td',
-                                  'code','pre','hr','span','div','figure','figcaption'],
-                    ALLOWED_ATTR: ['href','target','rel','src','alt','class','title','width','height'],
-                  }),
+                  __html: DOMPurify.sanitize(post.content, SANITIZE_CONFIG),
                 }}
               />
 
