@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import DOMPurify from "dompurify";
-import { Phone, MessageCircle, ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,10 @@ interface CarData {
   youtube_video_1_title?: string | null;
   youtube_video_2?: string | null;
   youtube_video_2_title?: string | null;
+  youtube_video_3?: string | null;
+  youtube_video_3_title?: string | null;
+  youtube_video_4?: string | null;
+  youtube_video_4_title?: string | null;
 }
 
 function getImageSrc(img: any): string {
@@ -148,7 +152,6 @@ const CarDetail = () => {
     }
   }
 
-
   return (
     <div className="min-h-screen flex flex-col bg-white">
       <Navbar />
@@ -227,10 +230,12 @@ const CarDetail = () => {
           )}
 
           {/* YouTube Videos Section */}
-          {(carData.youtube_video_1 || carData.youtube_video_2) && (() => {
+          {(carData.youtube_video_1 || carData.youtube_video_2 || carData.youtube_video_3 || carData.youtube_video_4) && (() => {
             const videos = [
               { url: carData.youtube_video_1, title: carData.youtube_video_1_title },
               { url: carData.youtube_video_2, title: carData.youtube_video_2_title },
+              { url: carData.youtube_video_3, title: carData.youtube_video_3_title },
+              { url: carData.youtube_video_4, title: carData.youtube_video_4_title },
             ].filter(v => v.url && getYouTubeEmbedUrl(v.url!));
 
             if (videos.length === 0) return null;
