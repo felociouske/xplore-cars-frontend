@@ -6,7 +6,6 @@ export const fetchCars = async () => {
     if (!response.ok) throw new Error("Failed to fetch cars");
 
     const data = await response.json();
-    console.log("✅ Cars API Response:", data);
 
     const normalizedData = (Array.isArray(data) ? data : data.results || []).map(car => ({
       ...car,
@@ -21,7 +20,7 @@ export const fetchCars = async () => {
 
     return normalizedData;
   } catch (error) {
-    console.error("❌ Error fetching cars:", error);
+    console.error("Error fetching cars:", error);
     return [];
   }
 };
@@ -42,7 +41,7 @@ export async function submitEnquiry(formData) {
 
     return await response.json();
   } catch (error) {
-    console.error("❌ Error submitting enquiry:", error);
+    console.error("Error submitting enquiry:", error);
     throw error;
   }
 }
@@ -63,54 +62,11 @@ export async function submitCarEnquiry(formData) {
 
     return await response.json();
   } catch (error) {
-    console.error("❌ Error submitting car enquiry:", error);
+    console.error("Error submitting car enquiry:", error);
     throw error;
   }
 }
 
-export const sendMasterclassEnquiry = async (formData) => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/masterclass-enquiry/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error("Error:", errorData);
-      throw new Error("Failed to send enquiry");
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error("Error sending masterclass enquiry:", error);
-    throw error;
-  }
-};
-
-
-export async function fetchTestimonials(filters = {}) {
-  try {
-    const params = new URLSearchParams(filters).toString();
-    const url = `${API_BASE_URL}/testimonials/${params ? `?${params}` : ""}`;
-
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`Error fetching testimonials: ${res.statusText}`);
-
-    const data = await res.json();
-
-    if (Array.isArray(data)) return data;
-    if (Array.isArray(data.results)) return data.results;
-
-    return [];
-  } catch (error) {
-    console.error("❌ fetchTestimonials Error:", error);
-    return [];
-  }
-}
 
 export async function fetchBlogPosts() {
   try {

@@ -173,10 +173,7 @@ const CarDetail = () => {
                     <img
                       src={images[0]}
                       alt={carTitle}
-                      className="w-full h-96 object-cover hover:opacity-90 transition"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = "/placeholder-car.jpg";
-                      }}
+                      className="w-full max-h-[500px] object-cover hover:opacity-90 transition"
                     />
                   </div>
 
