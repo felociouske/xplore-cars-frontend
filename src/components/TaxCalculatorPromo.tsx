@@ -135,7 +135,7 @@ const TaxCalculatorPromo = () => {
                 )}
               </div>
               <a
-                href="https://tax.xplorecarimports.com"
+                href="https://tax.xplorecarimports.co.ke"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 w-full bg-primary text-primary-foreground rounded-xl py-3.5 text-sm font-bold transition-colors hover:opacity-90"
