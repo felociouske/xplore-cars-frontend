@@ -13,7 +13,6 @@ const navLinks: { name: string; path?: string; hash?: string; external?: boolean
   { name: "Our Imports & Reviews", path: "/car-options" },
   { name: "Blogs", path: "/blog" },
   { name: "Contact", path: "/contact" },
-  { name: "Tax Calculator", external: true, href: "https://tax.xplorecarimports.com" },
 ];
 
 const Navbar = () => {
