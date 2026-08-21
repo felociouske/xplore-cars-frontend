@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
+import ImportProcess from "./pages/CarImportProcess";
 import Inventory from "./pages/Inventory";
 import CarDetail from "./pages/CarDetail";
 import About from "./pages/About";
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/" element={<Index />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/import-process" element={<ImportProcess />} />
             <Route path="/car-options" element={<Inventory />} />
             <Route path="/car-options/:id" element={<CarDetail />} />
             <Route path="/about" element={<About />} />

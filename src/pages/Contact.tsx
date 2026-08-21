@@ -8,7 +8,7 @@ const CONTACT_DETAILS = [
   {
     icon: MapPin,
     label: "Location",
-    value: "Zuhura Place 2nd floor, Thika Town",
+    value: "Zuhura Place 2nd floor Room 207, Thika Town",
     href: null,
   },
   {
