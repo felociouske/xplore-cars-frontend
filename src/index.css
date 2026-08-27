@@ -293,3 +293,91 @@
   display: table;
   clear: both;
 }
+
+/* ============================================
+   Blog image layout — grouped rows + standalone cap
+   MUST come after the .image / .image-style-* rules
+   above, since it overrides them for these two cases.
+   ============================================ */
+
+/* The wrapper groupConsecutiveBlogImages() creates around
+   2+ consecutive default-style images. */
+.blog-image-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1.5rem 0;
+  clear: both; /* in case a floated image precedes this row */
+}
+
+@media (max-width: 767px) {
+  .blog-image-row {
+    flex-direction: column;
+  }
+}
+
+/* Override .image's display:table/margin:auto/max-width:100% —
+   those were sizing the WHOLE article-width table, which breaks
+   flex sizing on each item. !important is needed here because
+   .image (0,1,0 specificity) and this selector both apply to the
+   same element, and .image comes later in the cascade order. */
+.blog-image-row > .image,
+.blog-image-row > figure,
+.blog-image-row > p {
+  display: block !important;
+  float: none !important;
+  margin: 0 !important;
+  flex: 1 1 240px;
+  /* Caps growth at ~1/3 of the row width so a leftover image in an
+     incomplete row (e.g. 1 or 2 left over from a run of 4 or 5)
+     can't stretch to fill the whole row by itself. 0.667rem ≈ 2/3
+     of the 1rem gap, accounting for this item's share of the two
+     gaps between three columns. */
+  max-width: calc(33.333% - 0.667rem) !important;
+  min-width: 0;
+}
+
+/* On mobile the row switches to a single column (see media query
+   below), so the 33% cap must not apply there — otherwise every
+   image would be stuck at a third of a narrow phone screen. */
+@media (max-width: 767px) {
+  .blog-image-row > .image,
+  .blog-image-row > figure,
+  .blog-image-row > p {
+    max-width: 100% !important;
+  }
+}
+
+.blog-image-row img {
+  width: 100% !important;
+  height: 260px;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+/* Standalone (non-grouped) images — direct children of .prose,
+   since grouped ones are now nested one level deeper inside
+   .blog-image-row and won't match this selector. Caps the
+   "one big image" case (your RAV4 screenshot) without touching
+   grouped rows. */
+.prose > .image {
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.prose > .image img {
+  max-height: 420px;
+  object-fit: cover;
+}
+
+/* Fallback for pasted images that land as bare <p><img></p>
+   instead of <figure class="image"> — same cap, different markup. */
+.prose > p > img:only-child {
+  max-width: 600px;
+  max-height: 420px;
+  object-fit: cover;
+  display: block;
+  margin: 1.5rem auto;
+  border-radius: 0.5rem;
+}

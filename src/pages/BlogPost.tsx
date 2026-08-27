@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Calendar, User, ArrowLeft, ArrowRight, Play, MessageCircle} from "lucide-react";
 import DOMPurify from "dompurify";
+import { groupConsecutiveBlogImages } from "../utils/groupBlogImages";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { fetchBlogPost, fetchBlogPosts } from "../services/api";
@@ -107,6 +108,16 @@ const BlogPost = () => {
     });
   }, [slug]);
 
+  // Sanitize first (security boundary), then group consecutive images
+  // into flex rows (presentation only). Memoized so this DOM-parsing
+  // work only re-runs when the post content actually changes, not on
+  // every render (e.g. when showYoutubePopup toggles).
+  const processedContent = useMemo(() => {
+    if (!post) return "";
+    const clean = DOMPurify.sanitize(post.content, SANITIZE_CONFIG);
+    return groupConsecutiveBlogImages(clean);
+  }, [post?.content]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex flex-col">
@@ -188,12 +199,11 @@ const BlogPost = () => {
                 </p>
               )}
 
-              {/* Article content */}
+              {/* Article content — processedContent is sanitized HTML with
+                  consecutive images already wrapped into flex rows */}
               <div
                 className="prose prose-lg max-w-none text-gray-700 leading-relaxed prose-headings:mt-6 prose-headings:mb-3 prose-p:my-3"
-                dangerouslySetInnerHTML={{
-                  __html: DOMPurify.sanitize(post.content, SANITIZE_CONFIG),
-                }}
+                dangerouslySetInnerHTML={{ __html: processedContent }}
               />
 
               {/* YouTube section */}
